@@ -1,0 +1,39 @@
+<!-- src/pages/Doctors/Edit/doctor-edit.component.html -->
+
+<div class="container" *ngIf="form">
+  <h1>Editar Médico</h1>
+  <form (ngSubmit)="onSave()">
+    <label>
+      Nome:
+      <input type="text" name="name" [(ngModel)]="form.name" required />
+    </label>
+
+    <label>
+      CRM:
+      <input type="text" name="crm" [(ngModel)]="form.crm" required />
+    </label>
+
+    <label>
+      Especialidade:
+      <input type="text" name="specialty" [(ngModel)]="form.specialty" required />
+    </label>
+
+    <label>
+      Email:
+      <input type="email" name="email" [(ngModel)]="form.email" required />
+    </label>
+
+    <label>
+      Telefone:
+      <input type="tel" name="phone" [(ngModel)]="form.phone" required />
+    </label>
+
+    <label class="checkboxLabel">
+      Ativo:
+      <input type="checkbox" name="isActive" [(ngModel)]="form.isActive" />
+    </label>
+
+    <button type="submit">Salvar Alterações</button>
+    <button type="button" (click)="onCancel()">Cancelar</button>
+  </form>
+</div>

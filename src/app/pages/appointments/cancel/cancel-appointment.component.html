@@ -1,0 +1,28 @@
+<!-- src/app/pages/appointments/cancel/cancel-appointment.component.html -->
+
+<div class="cancelContainer" *ngIf="appointment">
+  <h1>Cancelar Consulta</h1>
+  <p>Tem certeza de que deseja cancelar esta consulta?</p>
+
+  <ul>
+    <li>
+      <strong>Data e Hora:</strong> {{ formatDate(appointment.appointmentDate) }}
+    </li>
+    <li>
+      <strong>Paciente:</strong>
+      {{ appointment.patient?.fullName || ('ID ' + appointment.patientId) }}
+    </li>
+    <li>
+      <strong>Médico:</strong>
+      {{ appointment.doctor?.fullName || ('ID ' + appointment.doctorId) }}
+    </li>
+  </ul>
+
+  <button type="button" class="btnDanger" (click)="handleCancel()">
+    Confirmar Cancelamento
+  </button>
+
+  <button type="button" class="backLink" (click)="handleBack()">
+    Voltar
+  </button>
+</div>

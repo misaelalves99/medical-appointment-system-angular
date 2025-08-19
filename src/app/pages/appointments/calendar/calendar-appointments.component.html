@@ -1,0 +1,27 @@
+<!-- src/app/pages/appointments/calendar/calendar-appointments.component.html -->
+
+<div class="calendarContainer">
+  <h1>Calendário de Consultas</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Data</th>
+        <th>Hora</th>
+        <th>Paciente</th>
+        <th>Médico</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let appointment of sortedAppointments">
+        <td>{{ appointment.appointmentDate | date:'dd/MM/yyyy' }}</td>
+        <td>{{ appointment.appointmentDate | date:'HH:mm' }}</td>
+        <td>{{ appointment.patientName || ('ID ' + appointment.patientId) }}</td>
+        <td>{{ appointment.doctorName || ('ID ' + appointment.doctorId) }}</td>
+        <td>{{ statusToString(appointment.status) }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <button class="backLink" (click)="onBack()">Voltar</button>
+</div>

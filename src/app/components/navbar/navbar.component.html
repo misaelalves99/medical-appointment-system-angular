@@ -1,0 +1,70 @@
+<!-- src/app/components/layout/navbar/navbar.component.html -->
+
+<nav class="navbar" role="navigation" aria-label="Navegação principal">
+    <a routerLink="/" class="navbarLogo" aria-label="Página inicial">Medical</a>
+
+    <button
+    class="navbarToggle"
+    id="navbarToggle"
+    [attr.aria-label]="menuOpen ? 'Fechar menu' : 'Abrir menu'"
+    [attr.aria-expanded]="menuOpen"
+    aria-controls="navbarLinks"
+    (click)="toggleMenu()"
+    >
+    ☰
+    </button>
+
+    <div
+        id="navbarLinks"
+        class="navbarLinks"
+        [class.active]="menuOpen"
+    >
+        <a
+        routerLink="/"
+        routerLinkActive="activeLink"
+        [routerLinkActiveOptions]="{ exact: true }"
+        class="navLink"
+        (click)="closeMenu()"
+        >
+        Home
+        </a>
+
+        <a
+        routerLink="/patient"
+        routerLinkActive="activeLink"
+        class="navLink"
+        (click)="closeMenu()"
+        >
+        Pacientes
+        </a>
+
+        <!-- correção: rota plural -->
+        <a
+        routerLink="/doctors"
+        routerLinkActive="activeLink"
+        class="navLink"
+        (click)="closeMenu()"
+        >
+        Médicos
+        </a>
+
+        <a
+        routerLink="/specialty"
+        routerLinkActive="activeLink"
+        class="navLink"
+        (click)="closeMenu()"
+        >
+        Especialidades
+        </a>
+
+        <!-- correção: rota plural -->
+        <a
+        routerLink="/appointments"
+        routerLinkActive="activeLink"
+        class="navLink"
+        (click)="closeMenu()"
+        >
+        Consultas
+        </a>
+    </div>
+</nav>

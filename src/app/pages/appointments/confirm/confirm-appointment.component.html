@@ -1,0 +1,31 @@
+<!-- src/app/pages/appointment/confirm/confirm-appointment.component.html -->
+
+<div class="confirmContainer">
+  <h1>Confirmar Consulta</h1>
+  <p>Deseja confirmar esta consulta?</p>
+
+  <ul>
+    <li>
+      <strong>Data e Hora:</strong>
+      {{ appointment.appointmentDate | date: 'dd/MM/yyyy HH:mm' }}
+    </li>
+    <li>
+      <strong>Paciente:</strong>
+      {{ appointment.patient?.fullName || ('ID ' + appointment.patientId) }}
+    </li>
+    <li>
+      <strong>Médico:</strong>
+      {{ appointment.doctor?.fullName || ('ID ' + appointment.doctorId) }}
+    </li>
+  </ul>
+
+  <form (ngSubmit)="handleConfirm($event)">
+    <button type="submit" class="btnSuccess">
+      Confirmar
+    </button>
+  </form>
+
+  <button type="button" class="backLink" (click)="handleBack()">
+    Cancelar
+  </button>
+</div>

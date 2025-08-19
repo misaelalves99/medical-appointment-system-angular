@@ -1,0 +1,28 @@
+<!-- src/pages/Doctor/Availability/availability.component.html -->
+
+<div class="availabilityContainer">
+  <h1>Disponibilidade dos Médicos</h1>
+
+  <table>
+    <thead>
+      <tr>
+        <th>ID do Médico</th>
+        <th>Data</th>
+        <th>Hora Início</th>
+        <th>Hora Fim</th>
+        <th>Disponível</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let availability of sortedAvailabilities">
+        <td>{{ availability.doctorId }}</td>
+        <td>{{ availability.date | date:'dd/MM/yyyy' }}</td>
+        <td>{{ availability.startTime }}</td>
+        <td>{{ availability.endTime }}</td>
+        <td>{{ availability.isAvailable ? 'Sim' : 'Não' }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <a routerLink="/doctor" class="backLink">Voltar</a>
+</div>

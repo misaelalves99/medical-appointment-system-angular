@@ -1,0 +1,82 @@
+<!-- src/pages/patient/edit/edit-patient.component.html -->
+
+<div class="editPatientContainer">
+  <h1>Editar Paciente</h1>
+
+  <form (ngSubmit)="handleSubmit()">
+    <input type="hidden" name="id" [value]="formData.id" />
+
+    <div>
+      <label for="name">Nome:</label>
+      <input
+        id="name"
+        name="name"
+        type="text"
+        [(ngModel)]="formData.name"
+        (ngModelChange)="handleChange($event)"
+        required
+      />
+    </div>
+
+    <div>
+      <label for="cpf">CPF:</label>
+      <input
+        id="cpf"
+        name="cpf"
+        type="text"
+        [(ngModel)]="formData.cpf"
+        (ngModelChange)="handleChange($event)"
+        required
+      />
+    </div>
+
+    <div>
+      <label for="dateOfBirth">Data de Nascimento:</label>
+      <input
+        id="dateOfBirth"
+        name="dateOfBirth"
+        type="date"
+        [(ngModel)]="formData.dateOfBirth"
+        (ngModelChange)="handleChange($event)"
+        required
+      />
+    </div>
+
+    <div>
+      <label for="email">Email:</label>
+      <input
+        id="email"
+        name="email"
+        type="email"
+        [(ngModel)]="formData.email"
+        (ngModelChange)="handleChange($event)"
+      />
+    </div>
+
+    <div>
+      <label for="phone">Telefone:</label>
+      <input
+        id="phone"
+        name="phone"
+        type="tel"
+        [(ngModel)]="formData.phone"
+        (ngModelChange)="handleChange($event)"
+      />
+    </div>
+
+    <div>
+      <label for="address">Endereço:</label>
+      <input
+        id="address"
+        name="address"
+        type="text"
+        [(ngModel)]="formData.address"
+        (ngModelChange)="handleChange($event)"
+      />
+    </div>
+
+    <button type="submit">Salvar Alterações</button>
+  </form>
+
+  <button class="back" (click)="goBack()">Voltar</button>
+</div>

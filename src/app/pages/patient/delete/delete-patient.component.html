@@ -1,0 +1,21 @@
+<!-- src/pages/Patient/Delete/delete-patient.component.html -->
+
+<div class="deletePatientContainer" *ngIf="patient; else loading">
+  <h1>Confirmar Exclusão</h1>
+  <p>
+    Tem certeza de que deseja excluir o paciente <strong>{{ patient.name }}</strong>?
+  </p>
+
+  <form (ngSubmit)="handleSubmit()">
+    <button type="submit" class="btnDelete">
+      Excluir
+    </button>
+    <button type="button" class="btnCancel" (click)="handleCancel()">
+      Cancelar
+    </button>
+  </form>
+</div>
+
+<ng-template #loading>
+  <p>Carregando...</p>
+</ng-template>

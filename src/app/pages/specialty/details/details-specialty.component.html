@@ -1,0 +1,13 @@
+<!-- src/pages/specialty/details/details-specialty.component.html -->
+
+<div class="specialtyDetailsContainer">
+  <h1>Detalhes da Especialidade</h1>
+
+  <p><strong>ID:</strong> {{ id }}</p>
+  <p><strong>Nome:</strong> {{ name }}</p>
+
+  <div class="actions">
+    <a [routerLink]="['/specialty/edit', id]" class="edit">Editar</a>
+    <a routerLink="/specialty" class="back">Voltar para a Lista</a>
+  </div>
+</div>

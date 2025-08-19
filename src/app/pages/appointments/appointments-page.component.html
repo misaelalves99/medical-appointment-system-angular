@@ -1,0 +1,51 @@
+<!-- src/app/pages/appointments/appointments-page.component.html -->
+
+<div class="container">
+  <h1 class="title">Lista de Consultas</h1>
+
+  <div class="actions">
+    <button class="createBtn" [routerLink]="['/appointments/create']">
+      Nova Consulta
+    </button>
+
+    <input
+      type="text"
+      placeholder="Pesquisar por data, hora, paciente, médico ou status..."
+      [(ngModel)]="search"
+      class="searchInput"
+    />
+  </div>
+
+  <p *ngIf="loading">Carregando...</p>
+
+  <table class="table" *ngIf="!loading">
+    <thead>
+      <tr>
+        <th>Data</th>
+        <th>Hora</th>
+        <th>Paciente</th>
+        <th>Médico</th>
+        <th>Status</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let a of filteredAppointments">
+        <td>{{ a.appointmentDate | date: 'dd/MM/yyyy' }}</td>
+        <td>{{ a.appointmentDate | date: 'HH:mm' }}</td>
+        <td>{{ a.patientId ? ('Paciente ID: ' + a.patientId) : '—' }}</td>
+        <td>{{ a.doctorId ? ('Médico ID: ' + a.doctorId) : '—' }}</td>
+        <td>{{ getStatusLabel(a.status) }}</td>
+        <td>
+          <a class="link" [routerLink]="['/appointments', a.id]">Detalhes</a>
+          <span class="sep">|</span>
+          <a class="link" [routerLink]="['/appointments/edit', a.id]">Editar</a>
+          <span class="sep">|</span>
+          <button class="deleteBtn" (click)="handleDelete(a.id)">
+            Excluir
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

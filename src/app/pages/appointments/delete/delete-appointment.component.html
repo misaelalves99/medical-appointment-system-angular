@@ -1,0 +1,27 @@
+<!-- src/pages/Appointment/Delete/delete-appointment.component.html -->
+
+<div class="deleteContainer">
+  <h1>Excluir Consulta</h1>
+  <h3>Tem certeza que deseja excluir esta consulta?</h3>
+
+  <dl>
+    <dt>Paciente</dt>
+    <dd>{{ appointment?.patientName || ('ID ' + appointment?.patientId) }}</dd>
+
+    <dt>Médico</dt>
+    <dd>{{ appointment?.doctorName || ('ID ' + appointment?.doctorId) }}</dd>
+
+    <dt>Data e Hora</dt>
+    <dd>{{ appointment?.appointmentDate | date:'short':'':'pt-BR' }}</dd>
+
+    <dt>Status</dt>
+    <dd>{{ getStatusLabel(appointment?.status) }}</dd>
+  </dl>
+
+  <form (ngSubmit)="handleSubmit()">
+    <button type="submit" class="btnDanger">Excluir</button>
+    <button type="button" class="btnSecondary" (click)="navigateToAppointments()">
+      Cancelar
+    </button>
+  </form>
+</div>

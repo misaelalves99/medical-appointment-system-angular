@@ -1,0 +1,39 @@
+<!-- src/pages/Doctors/Create/create-doctor.component.html -->
+
+<div class="container">
+  <h1>Cadastrar Médico</h1>
+  <form (ngSubmit)="handleSubmit()">
+    <div>
+      <label for="name">Nome</label>
+      <input id="name" name="name" type="text" required [value]="form.name" (input)="handleChange($event)" />
+    </div>
+
+    <div>
+      <label for="crm">CRM</label>
+      <input id="crm" name="crm" type="text" required [value]="form.crm" (input)="handleChange($event)" />
+    </div>
+
+    <div>
+      <label for="specialty">Especialidade</label>
+      <input id="specialty" name="specialty" type="text" required [value]="form.specialty" (input)="handleChange($event)" />
+    </div>
+
+    <div>
+      <label for="email">Email</label>
+      <input id="email" name="email" type="email" required [value]="form.email" (input)="handleChange($event)" />
+    </div>
+
+    <div>
+      <label for="phone">Telefone</label>
+      <input id="phone" name="phone" type="tel" required [value]="form.phone" (input)="handleChange($event)" />
+    </div>
+
+    <div>
+      <label for="isActive">Ativo</label>
+      <input id="isActive" name="isActive" type="checkbox" [checked]="form.isActive" (change)="handleChange($event)" />
+    </div>
+
+    <button type="submit">Salvar</button>
+    <button type="button" (click)="cancel()">Cancelar</button>
+  </form>
+</div>

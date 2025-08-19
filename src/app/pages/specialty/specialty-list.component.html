@@ -1,0 +1,43 @@
+<!-- src/pages/specialty/specialty-list.component.html -->
+
+<div class="specialtyIndexContainer">
+  <h1>Especialidades</h1>
+
+  <a class="createLink" (click)="goTo('/specialty/create')">Cadastrar Nova Especialidade</a>
+
+  <div>
+    <input
+      type="text"
+      placeholder="Pesquisar por Nome ou ID..."
+      [(ngModel)]="filter"
+      class="searchInput"
+      aria-label="Pesquisar especialidades"
+    />
+
+    <table class="specialtyTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nome</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let specialty of filteredSpecialties; let idx = index">
+          <td>{{ specialty.id }}</td>
+          <td>{{ specialty.name }}</td>
+          <td>
+            <a class="detailsLink" (click)="goTo('/specialty/details/' + specialty.id)">Detalhes</a>
+            <a class="detailsLink" (click)="goTo('/specialty/edit/' + specialty.id)">Editar</a>
+            <a class="detailsLink" (click)="goTo('/specialty/delete/' + specialty.id)">Excluir</a>
+          </td>
+        </tr>
+        <tr *ngIf="filteredSpecialties.length === 0">
+          <td colspan="3" style="text-align: center; padding: 1rem;">
+            Nenhuma especialidade encontrada.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

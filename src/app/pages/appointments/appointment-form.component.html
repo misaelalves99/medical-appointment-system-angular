@@ -1,0 +1,71 @@
+<!-- src/app/pages/appointments/appointment-form.component.html -->
+
+<div class="container">
+  <h1 class="title">
+    {{ mode === 'create' ? 'Nova Consulta' : 'Editar Consulta' }}
+  </h1>
+
+  <p *ngIf="loading">Carregando...</p>
+
+  <form *ngIf="!loading" class="form" (ngSubmit)="handleSubmit()">
+    <div class="row">
+      <label>Paciente (ID)</label>
+      <input type="number" [(ngModel)]="state.patientId" name="patientId" />
+      <div *ngIf="errors['patientId']" class="error">
+        {{ errors['patientId'] }}
+      </div>
+    </div>
+
+    <div class="row">
+      <label>Nome do Paciente (opcional)</label>
+      <input [(ngModel)]="state.patientName" name="patientName" />
+    </div>
+
+    <div class="row">
+      <label>Médico (ID)</label>
+      <input type="number" [(ngModel)]="state.doctorId" name="doctorId" />
+      <div *ngIf="errors['doctorId']" class="error">
+        {{ errors['doctorId'] }}
+      </div>
+    </div>
+
+    <div class="row">
+      <label>Nome do Médico (opcional)</label>
+      <input [(ngModel)]="state.doctorName" name="doctorName" />
+    </div>
+
+    <div class="row">
+      <label>Data e Hora</label>
+      <input
+        type="datetime-local"
+        [(ngModel)]="state.appointmentDate"
+        name="appointmentDate"
+      />
+      <div *ngIf="errors['appointmentDate']" class="error">
+        {{ errors['appointmentDate'] }}
+      </div>
+    </div>
+
+    <div class="row">
+      <label>Status</label>
+      <select [(ngModel)]="state.status" name="status">
+        <option [ngValue]="0">Agendada</option>
+        <option [ngValue]="1">Confirmada</option>
+        <option [ngValue]="2">Cancelada</option>
+        <option [ngValue]="3">Concluída</option>
+      </select>
+    </div>
+
+    <div class="row">
+      <label>Observações</label>
+      <textarea [(ngModel)]="state.notes" name="notes"></textarea>
+    </div>
+
+    <div class="buttons">
+      <button type="submit" class="saveBtn">Salvar</button>
+      <button type="button" class="cancelBtn" (click)="handleCancel()">
+        Cancelar
+      </button>
+    </div>
+  </form>
+</div>

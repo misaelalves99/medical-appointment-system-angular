@@ -1,0 +1,39 @@
+<!-- src/pages/Patient/Create/create-patient.component.html -->
+
+<div class="createPatientContainer">
+  <h1>Cadastrar Paciente</h1>
+
+  <form (ngSubmit)="handleSubmit()">
+    <div>
+      <label for="name">Nome:</label>
+      <input id="name" name="name" type="text" [(ngModel)]="formData.name" required />
+    </div>
+
+    <div>
+      <label for="dateOfBirth">Data de Nascimento:</label>
+      <input id="dateOfBirth" name="dateOfBirth" type="date" [(ngModel)]="formData.dateOfBirth" required />
+    </div>
+
+    <div>
+      <label for="gender">Sexo:</label>
+      <select id="gender" name="gender" [(ngModel)]="formData.gender" required>
+        <option value="">Selecione</option>
+        <option value="Masculino">Masculino</option>
+        <option value="Feminino">Feminino</option>
+        <option value="Outro">Outro</option>
+      </select>
+    </div>
+
+    <div>
+      <label for="phone">Telefone:</label>
+      <input id="phone" name="phone" type="tel" [(ngModel)]="formData.phone" />
+    </div>
+
+    <div>
+      <label for="email">Email:</label>
+      <input id="email" name="email" type="email" [(ngModel)]="formData.email" />
+    </div>
+
+    <button type="submit">Salvar</button>
+  </form>
+</div>

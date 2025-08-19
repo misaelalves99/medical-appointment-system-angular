@@ -1,0 +1,26 @@
+<!-- src/pages/patient/upload-profile-picture/upload-profile-picture.component.html -->
+
+<div class="uploadProfileContainer">
+  <h1>Upload de Foto de Perfil do Paciente</h1>
+
+  <p><strong>Nome:</strong> {{ patientName }}</p>
+
+  <form (ngSubmit)="handleSubmit()" enctype="multipart/form-data">
+    <input type="hidden" [value]="patientId" name="id" />
+
+    <div>
+      <label for="profilePicture">Selecionar Foto:</label>
+      <input
+        type="file"
+        id="profilePicture"
+        name="profilePicture"
+        accept="image/*"
+        (change)="handleFileChange($event)"
+      />
+    </div>
+
+    <button type="submit" [disabled]="!selectedFile">Enviar Foto</button>
+  </form>
+
+  <button class="back" (click)="goBack()">Voltar</button>
+</div>

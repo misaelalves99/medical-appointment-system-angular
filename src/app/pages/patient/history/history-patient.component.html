@@ -1,0 +1,24 @@
+<!-- src/pages/patient/history/history-patient.component.html -->
+
+<div class="patientHistoryContainer">
+  <h1>Histórico do Paciente</h1>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Data</th>
+        <th>Descrição</th>
+        <th>Notas</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of sortedHistory; let idx = index">
+        <td>{{ formatDate(item.recordDate) }}</td>
+        <td>{{ item.description }}</td>
+        <td>{{ item.notes || '-' }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <a class="backLink" (click)="goBack()">Voltar</a>
+</div>

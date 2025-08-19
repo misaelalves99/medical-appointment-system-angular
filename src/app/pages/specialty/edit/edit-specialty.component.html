@@ -1,0 +1,26 @@
+<!-- src/pages/specialty/edit/edit-specialty.component.html -->
+
+<div class="editSpecialtyContainer">
+  <h1>Editar Especialidade</h1>
+
+  <form (ngSubmit)="handleSubmit()">
+    <input type="hidden" [value]="id" />
+    <div>
+      <label for="specialtyName">Nome da Especialidade:</label>
+      <input
+        id="specialtyName"
+        type="text"
+        class="form-control"
+        [(ngModel)]="name"
+        name="specialtyName"
+        required
+      />
+      <span *ngIf="error" class="textDanger">{{ error }}</span>
+    </div>
+    <button type="submit" class="btn btn-primary mt-2">
+      Salvar Alterações
+    </button>
+  </form>
+
+  <a routerLink="/specialty" class="btn btn-secondary mt-3">Voltar</a>
+</div>

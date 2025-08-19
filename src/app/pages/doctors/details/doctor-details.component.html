@@ -1,0 +1,17 @@
+<!-- src/pages/Doctors/Details/doctor-details.component.html -->
+
+<div class="container" *ngIf="doctor">
+  <h1>Detalhes do Médico</h1>
+
+  <p><strong>Nome:</strong> {{ doctor.name }}</p>
+  <p><strong>CRM:</strong> {{ doctor.crm }}</p>
+  <p><strong>Especialidade:</strong> {{ doctor.specialty }}</p>
+  <p><strong>Email:</strong> {{ doctor.email }}</p>
+  <p><strong>Telefone:</strong> {{ doctor.phone }}</p>
+  <p><strong>Ativo:</strong> {{ doctor.isActive ? 'Sim' : 'Não' }}</p>
+
+  <div class="actions">
+    <button class="edit" (click)="onEdit(doctor.id)">Editar</button>
+    <button class="back" (click)="onBack()">Voltar</button>
+  </div>
+</div>

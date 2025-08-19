@@ -1,0 +1,19 @@
+<!-- src/pages/specialty/delete/delete-specialty.component.html -->
+
+<div class="deleteSpecialtyContainer" *ngIf="specialty; else loading">
+  <h1>Excluir Especialidade</h1>
+  <h4>Tem certeza que deseja excluir esta especialidade?</h4>
+  <div>
+    <strong>ID:</strong> {{ specialty.id }}<br />
+    <strong>Nome:</strong> {{ specialty.name }}
+  </div>
+
+  <form (ngSubmit)="handleSubmit()">
+    <button type="submit">Excluir</button>
+    <button type="button" class="cancelLink" (click)="handleCancel()">Cancelar</button>
+  </form>
+</div>
+
+<ng-template #loading>
+  <p>Carregando...</p>
+</ng-template>

@@ -1,0 +1,41 @@
+<!-- src/pages/Patient/patient-index.component.html -->
+
+<div class="patientIndexContainer">
+  <h1>Pacientes</h1>
+
+  <div class="actionsContainer">
+    <a routerLink="/patient/create" class="createLink">Cadastrar Novo Paciente</a>
+
+    <input
+      type="text"
+      placeholder="Pesquisar por Nome, CPF, Email ou Telefone..."
+      [(ngModel)]="search"
+      class="searchInput"
+    />
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>CPF</th>
+        <th>Email</th>
+        <th>Telefone</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let patient of filteredPatients">
+        <td>{{ patient.name }}</td>
+        <td>{{ patient.cpf }}</td>
+        <td>{{ patient.email }}</td>
+        <td>{{ patient.phone }}</td>
+        <td>
+          <a [routerLink]="['/patient/details', patient.id]" class="detailsLink">Detalhes</a>
+          <a [routerLink]="['/patient/edit', patient.id]" class="editLink">Editar</a>
+          <a [routerLink]="['/patient/delete', patient.id]" class="deleteLink">Excluir</a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

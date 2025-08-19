@@ -1,0 +1,38 @@
+<!-- src/pages/Doctors/doctor-list.component.html -->
+
+<div class="container">
+  <h1>Lista de Médicos</h1>
+  <div class="actionsContainer">
+    <button class="createButton" (click)="goToCreate()">Cadastrar Novo Médico</button>
+    <input type="text" placeholder="Pesquisar médicos..." [(ngModel)]="search" class="searchInput" />
+  </div>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>CRM</th>
+        <th>Especialidade</th>
+        <th>Email</th>
+        <th>Telefone</th>
+        <th>Ativo</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let doctor of filteredDoctors">
+        <td>{{ doctor.name }}</td>
+        <td>{{ doctor.crm }}</td>
+        <td>{{ doctor.specialty }}</td>
+        <td>{{ doctor.email }}</td>
+        <td>{{ doctor.phone }}</td>
+        <td>{{ doctor.isActive ? 'Sim' : 'Não' }}</td>
+        <td>
+          <button class="detailsButton" (click)="goToDetails(doctor.id)">Detalhes</button>
+          <button class="editButton" (click)="goToEdit(doctor.id)">Editar</button>
+          <button class="deleteButton" (click)="goToDelete(doctor.id)">Excluir</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

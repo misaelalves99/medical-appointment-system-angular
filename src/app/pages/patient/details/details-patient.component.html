@@ -1,0 +1,26 @@
+<!-- src/pages/patient/details/details-patient.component.html -->
+
+<div class="patientDetailsContainer">
+  <h1>Detalhes do Paciente</h1>
+
+  <!-- Exemplo imagem se quiser usar -->
+  <!--
+  <img
+    *ngIf="patient.profilePicturePath"
+    [src]="patient.profilePicturePath"
+    alt="Foto do Paciente"
+    class="profileImage"
+  />
+  -->
+
+  <p><strong>Nome:</strong> {{ patient.name }}</p>
+  <p><strong>Data de Nascimento:</strong> {{ formatDate(patient.dateOfBirth) }}</p>
+  <p><strong>Sexo:</strong> {{ patient.gender }}</p>
+  <p><strong>Telefone:</strong> {{ patient.phone || '-' }}</p>
+  <p><strong>Email:</strong> {{ patient.email || '-' }}</p>
+
+  <div class="actions">
+    <button class="edit" (click)="goToEdit()">Editar</button>
+    <button class="back" (click)="goBack()">Voltar para a Lista</button>
+  </div>
+</div>
