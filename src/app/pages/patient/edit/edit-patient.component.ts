@@ -2,6 +2,8 @@
 
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
+import { FormsModule } from '@angular/forms'; // <-- Import necessário
+import { CommonModule } from '@angular/common'; // Opcional, mas recomendado para ngIf/ngFor etc.
 
 export interface PatientEditForm {
   id: number;
@@ -17,7 +19,8 @@ export interface PatientEditForm {
   selector: 'app-edit-patient',
   templateUrl: './edit-patient.component.html',
   styleUrls: ['./edit-patient.component.css'],
-  standalone: true
+  standalone: true,
+  imports: [CommonModule, FormsModule] // <-- Adicionado FormsModule
 })
 export class EditPatientComponent {
   @Input() initialData!: PatientEditForm;

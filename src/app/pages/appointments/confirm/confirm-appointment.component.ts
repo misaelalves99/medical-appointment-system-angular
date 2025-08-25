@@ -2,6 +2,7 @@
 
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
+import { CommonModule, DatePipe } from '@angular/common';
 
 export interface Appointment {
   id: number;
@@ -15,6 +16,7 @@ export interface Appointment {
 @Component({
   selector: 'app-confirm-appointment',
   standalone: true,
+  imports: [CommonModule], // <-- Import CommonModule para usar pipes como "date"
   templateUrl: './confirm-appointment.component.html',
   styleUrls: ['./confirm-appointment.component.css']
 })

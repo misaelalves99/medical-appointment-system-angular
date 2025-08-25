@@ -1,7 +1,5 @@
 // src/pages/patient/delete/delete-patient.component.ts
 
-// src/pages/patient/delete/delete-patient.component.ts
-
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';

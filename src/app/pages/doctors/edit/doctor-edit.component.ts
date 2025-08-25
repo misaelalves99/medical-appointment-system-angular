@@ -4,7 +4,17 @@ import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Doctor } from '../details/doctor-details.component';
+
+// ⚡ Exportando a interface Doctor para testes e outros componentes
+export interface Doctor {
+  id: number;
+  name: string;
+  crm: string;
+  specialty: string;
+  email: string;
+  phone: string;
+  isActive: boolean;
+}
 
 @Component({
   selector: 'app-doctor-edit',

@@ -1,6 +1,7 @@
 // src/pages/patient/history/history-patient.component.ts
 
 import { Component, Input } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
 export interface PatientHistoryItem {
@@ -13,7 +14,8 @@ export interface PatientHistoryItem {
   selector: 'app-history-patient',
   templateUrl: './history-patient.component.html',
   styleUrls: ['./history-patient.component.css'],
-  standalone: true
+  standalone: true,
+  imports: [CommonModule]  // ← Import necessário para *ngFor e *ngIf
 })
 export class HistoryPatientComponent {
   @Input() history: PatientHistoryItem[] = [];
@@ -28,7 +30,7 @@ export class HistoryPatientComponent {
 
   formatDate(isoDate: string): string {
     const date = new Date(isoDate);
-    return date.toLocaleDateString('pt-BR');
+    return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
   }
 
   goBack(): void {
