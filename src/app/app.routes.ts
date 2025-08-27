@@ -3,50 +3,61 @@
 import { Routes } from '@angular/router';
 import { HomePageComponent } from './pages/home-page/home-page.component';
 
-// Appointments
+// -------------------- Appointments --------------------
 import { AppointmentsPageComponent } from './pages/appointments/appointments-page.component';
 import { AppointmentFormComponent } from './pages/appointments/appointment-form.component';
 import { DeleteAppointmentComponent } from './pages/appointments/delete/delete-appointment.component';
-// (Adicionar outros componentes de appointments se necessário)
+import { DetailsAppointmentComponent } from './pages/appointments/details/details-appointment.component';
 
-// Doctors
+// -------------------- Doctors --------------------
 import { DoctorListComponent } from './pages/doctors/doctor-list.component';
 import { DeleteDoctorComponent } from './pages/doctors/delete/delete-doctor.component';
-// (Adicionar outros componentes de doctors se necessário)
+import { DoctorEditComponent } from './pages/doctors/edit/doctor-edit.component';
+import { DoctorDetailsComponent } from './pages/doctors/details/doctor-details.component';
+import { CreateDoctorComponent } from './pages/doctors/create/create-doctor.component';
 
-// Patients
+// -------------------- Patients --------------------
 import { PatientIndexComponent } from './pages/patient/patient-index.component';
 import { DeletePatientComponent } from './pages/patient/delete/delete-patient.component';
-// (Adicionar outros componentes de patients se necessário)
+import { CreatePatientComponent } from './pages/patient/create/create-patient.component';
+import { EditPatientComponent } from './pages/patient/edit/edit-patient.component';
+import { DetailsPatientComponent } from './pages/patient/details/details-patient.component';
 
-// Specialties
+// -------------------- Specialties --------------------
 import { SpecialtyListComponent } from './pages/specialty/specialty-list.component';
 import { DeleteSpecialtyComponent } from './pages/specialty/delete/delete-specialty.component';
-// (Adicionar outros componentes de specialties se necessário)
+import { CreateSpecialtyComponent } from './pages/specialty/create/create-specialty.component';
+import { EditSpecialtyComponent } from './pages/specialty/edit/edit-specialty.component';
+import { DetailsSpecialtyComponent } from './pages/specialty/details/details-specialty.component';
 
 export const appRoutes: Routes = [
   { path: '', component: HomePageComponent },
 
-  // Appointments
+  // -------------------- Appointments --------------------
   { path: 'appointments', component: AppointmentsPageComponent },
   { path: 'appointments/create', component: AppointmentFormComponent, data: { mode: 'create' } },
   { path: 'appointments/edit/:id', component: AppointmentFormComponent, data: { mode: 'edit' } },
   { path: 'appointments/delete/:id', component: DeleteAppointmentComponent },
-  // adicionar detalhes, confirm, cancel, calendar se necessário
+  { path: 'appointments/details/:id', component: DetailsAppointmentComponent },
 
-  // Doctors
+  // -------------------- Doctors --------------------
   { path: 'doctors', component: DoctorListComponent },
+  { path: 'doctors/create', component: CreateDoctorComponent },
+  { path: 'doctors/edit/:id', component: DoctorEditComponent },
+  { path: 'doctors/details/:id', component: DoctorDetailsComponent },
   { path: 'doctors/delete/:id', component: DeleteDoctorComponent },
-  // adicionar create, edit, details se necessário
 
-  // Patients
+  // -------------------- Patients --------------------
   { path: 'patient', component: PatientIndexComponent },
+  { path: 'patient/create', component: CreatePatientComponent },
+  { path: 'patient/edit/:id', component: EditPatientComponent },
+  { path: 'patient/details/:id', component: DetailsPatientComponent },
   { path: 'patient/delete/:id', component: DeletePatientComponent },
-  // adicionar create, edit, details, history, upload-profile-picture se necessário
 
-  // Specialties
+  // -------------------- Specialties --------------------
   { path: 'specialty', component: SpecialtyListComponent },
-  { path: 'specialty/create', component: DeleteSpecialtyComponent }, // substituir pelo CreateSpecialtyComponent se existir
+  { path: 'specialty/create', component: CreateSpecialtyComponent },
+  { path: 'specialty/edit/:id', component: EditSpecialtyComponent },
+  { path: 'specialty/details/:id', component: DetailsSpecialtyComponent },
   { path: 'specialty/delete/:id', component: DeleteSpecialtyComponent },
-  // adicionar details, edit se necessário
 ];
