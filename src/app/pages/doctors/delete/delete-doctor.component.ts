@@ -1,42 +1,46 @@
-// src/pages/Doctors/Delete/delete-doctor.component.ts
+// src/app/pages/doctors/delete/delete-doctor.component.ts
 
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, ActivatedRoute, RouterModule } from '@angular/router';
-import { Doctor } from '../../../types/doctor.model';
-import { DoctorService } from '../../../services/doctor.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { DoctorService, Doctor } from '../../../services/doctor.service';
 
 @Component({
   selector: 'app-delete-doctor',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule],
   templateUrl: './delete-doctor.component.html',
-  styleUrls: ['./delete-doctor.component.css']
+  styleUrls: ['./delete-doctor.component.css'],
 })
 export class DeleteDoctorComponent implements OnInit {
-  private doctorService = inject(DoctorService);
-  private router = inject(Router);
-  private route = inject(ActivatedRoute);
-
   doctor: Doctor | null = null;
 
-  ngOnInit() {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
-    this.doctorService.getById(id).subscribe((d) => {
-      this.doctor = d ?? null; // transforma undefined em null
-    });
-  }
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private doctorService: DoctorService
+  ) {}
 
-  handleDelete() {
-    if (this.doctor) {
-      if (confirm(`Confirma exclusão do médico: ${this.doctor.name}?`)) {
-        this.doctorService.delete(this.doctor.id);
-        this.router.navigate(['/doctors']);
-      }
+  ngOnInit(): void {
+    const idParam = this.route.snapshot.paramMap.get('id');
+    const id = idParam ? Number(idParam) : undefined;
+
+    if (id != null) {
+      this.doctorService.getById(id).subscribe((doctor) => {
+        this.doctor = doctor ?? null;
+      });
     }
   }
 
-  cancel() {
+  handleDelete(): void {
+    if (this.doctor && this.doctor.id != null) {
+      this.doctorService.delete(this.doctor.id);
+      console.log('Médico excluído:', this.doctor);
+      this.router.navigate(['/doctors']);
+    }
+  }
+
+  handleCancel(): void {
     this.router.navigate(['/doctors']);
   }
 }

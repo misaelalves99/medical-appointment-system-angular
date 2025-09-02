@@ -1,10 +1,9 @@
 // src/app/services/specialty.service.ts
-
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 
 export interface Specialty {
-  id: number;
+  id?: number; // id opcional ao criar
   name: string;
 }
 
@@ -18,29 +17,37 @@ export class SpecialtyService {
   ];
 
   private specialtiesSubject = new BehaviorSubject<Specialty[]>([...this.specialties]);
+  specialties$ = this.specialtiesSubject.asObservable();
 
+  /** Retorna todas as especialidades como Observable */
   getSpecialties(): Observable<Specialty[]> {
-    return this.specialtiesSubject.asObservable();
+    return this.specialties$;
   }
 
-  getById(id: number): Observable<Specialty | undefined> {
-    return of(this.specialties.find(s => s.id === id));
+  /** Retorna uma especialidade por ID */
+  getSpecialtyById(id: number): Specialty | undefined {
+    return this.specialties.find(s => s.id === id);
   }
 
-  add(specialty: Specialty) {
-    this.specialties.push(specialty);
+  /** Adiciona uma nova especialidade */
+  addSpecialty(name: string) {
+    const newId = (this.specialties[this.specialties.length - 1]?.id ?? 0) + 1;
+    const newSpecialty: Specialty = { id: newId, name };
+    this.specialties.push(newSpecialty);
     this.specialtiesSubject.next([...this.specialties]);
   }
 
-  update(updated: Specialty) {
-    const index = this.specialties.findIndex(s => s.id === updated.id);
+  /** Atualiza uma especialidade existente */
+  updateSpecialty(id: number, name: string) {
+    const index = this.specialties.findIndex(s => s.id === id);
     if (index !== -1) {
-      this.specialties[index] = updated;
+      this.specialties[index] = { id, name };
       this.specialtiesSubject.next([...this.specialties]);
     }
   }
 
-  delete(id: number) {
+  /** Remove uma especialidade pelo ID */
+  deleteSpecialty(id: number) {
     this.specialties = this.specialties.filter(s => s.id !== id);
     this.specialtiesSubject.next([...this.specialties]);
   }

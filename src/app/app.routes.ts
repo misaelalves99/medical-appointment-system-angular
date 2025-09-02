@@ -4,8 +4,9 @@ import { Routes } from '@angular/router';
 import { HomePageComponent } from './pages/home-page/home-page.component';
 
 // -------------------- Appointments --------------------
-import { AppointmentsPageComponent } from './pages/appointments/appointments-page.component';
-import { AppointmentFormComponent } from './pages/appointments/appointment-form.component';
+import { AppointmentListComponent } from './pages/appointments/appointments-page.component';
+import { CreateAppointmentComponent } from './pages/appointments/create/create-appointment.component';
+import { EditAppointmentComponent } from './pages/appointments/edit/edit-appointment.component';
 import { DeleteAppointmentComponent } from './pages/appointments/delete/delete-appointment.component';
 import { DetailsAppointmentComponent } from './pages/appointments/details/details-appointment.component';
 
@@ -14,6 +15,7 @@ import { DoctorListComponent } from './pages/doctors/doctor-list.component';
 import { DeleteDoctorComponent } from './pages/doctors/delete/delete-doctor.component';
 import { DoctorEditComponent } from './pages/doctors/edit/doctor-edit.component';
 import { DoctorDetailsComponent } from './pages/doctors/details/doctor-details.component';
+
 import { CreateDoctorComponent } from './pages/doctors/create/create-doctor.component';
 
 // -------------------- Patients --------------------
@@ -34,9 +36,9 @@ export const appRoutes: Routes = [
   { path: '', component: HomePageComponent },
 
   // -------------------- Appointments --------------------
-  { path: 'appointments', component: AppointmentsPageComponent },
-  { path: 'appointments/create', component: AppointmentFormComponent, data: { mode: 'create' } },
-  { path: 'appointments/edit/:id', component: AppointmentFormComponent, data: { mode: 'edit' } },
+  { path: 'appointments', component: AppointmentListComponent },
+  { path: 'appointments/create', component: CreateAppointmentComponent, data: { mode: 'create' } },
+  { path: 'appointments/edit/:id', component: EditAppointmentComponent, data: { mode: 'edit' } },
   { path: 'appointments/delete/:id', component: DeleteAppointmentComponent },
   { path: 'appointments/details/:id', component: DetailsAppointmentComponent },
 

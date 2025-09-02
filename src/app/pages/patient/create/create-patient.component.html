@@ -1,9 +1,9 @@
-<!-- src/pages/Patient/Create/create-patient.component.html -->
+<!-- src/app/pages/patient/create/create-patient.component.html -->
 
 <div class="createPatientContainer">
   <h1>Cadastrar Paciente</h1>
 
-  <form (ngSubmit)="handleSubmit()">
+  <form #form="ngForm" (ngSubmit)="handleSubmit(form)">
     <div>
       <label for="name">Nome:</label>
       <input id="name" name="name" type="text" [(ngModel)]="formData.name" required />
@@ -41,9 +41,10 @@
 
     <div>
       <label for="address">Endereço:</label>
-      <input id="address" name="address" type="text" [(ngModel)]="formData.address" />
+      <input id="address" name="address" type="text" [(ngModel)]="formData.address" required />
     </div>
 
     <button type="submit">Salvar</button>
+    <button type="button" (click)="handleCancel()">Cancelar</button>
   </form>
 </div>

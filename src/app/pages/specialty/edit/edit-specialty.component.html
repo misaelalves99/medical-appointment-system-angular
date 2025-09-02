@@ -1,26 +1,28 @@
-<!-- src/pages/specialty/edit/edit-specialty.component.html -->
+<!-- src/app/pages/specialty/edit/edit-specialty.component.html -->
 
-<div class="editSpecialtyContainer">
+<div class="editSpecialtyContainer" *ngIf="specialty; else notFound">
   <h1>Editar Especialidade</h1>
 
-  <form (ngSubmit)="handleSubmit()">
-    <input type="hidden" [value]="id" />
-    <div>
+  <form #form="ngForm" (ngSubmit)="handleSubmit(form)">
+    <div class="form-group">
       <label for="specialtyName">Nome da Especialidade:</label>
       <input
         id="specialtyName"
-        type="text"
-        class="form-control"
-        [(ngModel)]="name"
         name="specialtyName"
+        type="text"
+        [(ngModel)]="name"
         required
       />
-      <span *ngIf="error" class="textDanger">{{ error }}</span>
+      <span class="textDanger" *ngIf="error">{{ error }}</span>
     </div>
-    <button type="submit" class="btn btn-primary mt-2">
-      Salvar Alterações
-    </button>
+
+    <button type="submit">Salvar Alterações</button>
   </form>
 
-  <a routerLink="/specialty" class="btn btn-secondary mt-3">Voltar</a>
+  <button class="btn-secondary" (click)="handleCancel()">Voltar</button>
 </div>
+
+<ng-template #notFound>
+  <p>Especialidade não encontrada.</p>
+  <button (click)="handleCancel()">Voltar</button>
+</ng-template>

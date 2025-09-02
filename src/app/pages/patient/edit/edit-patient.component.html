@@ -1,82 +1,60 @@
-<!-- src/pages/patient/edit/edit-patient.component.html -->
+<!-- src/app/pages/patient/edit/edit-patient.component.html -->
 
 <div class="editPatientContainer">
   <h1>Editar Paciente</h1>
 
-  <form (ngSubmit)="handleSubmit()">
-    <input type="hidden" name="id" [value]="formData.id" />
+  <ng-container *ngIf="existingPatient; else notFound">
+    <form #form="ngForm" (ngSubmit)="handleSubmit(form)">
+      <input type="hidden" name="id" [ngModel]="formData.id" />
 
-    <div>
-      <label for="name">Nome:</label>
-      <input
-        id="name"
-        name="name"
-        type="text"
-        [(ngModel)]="formData.name"
-        (ngModelChange)="handleChange($event)"
-        required
-      />
-    </div>
+      <div>
+        <label for="name">Nome:</label>
+        <input id="name" name="name" type="text" [(ngModel)]="formData.name" required />
+      </div>
 
-    <div>
-      <label for="cpf">CPF:</label>
-      <input
-        id="cpf"
-        name="cpf"
-        type="text"
-        [(ngModel)]="formData.cpf"
-        (ngModelChange)="handleChange($event)"
-        required
-      />
-    </div>
+      <div>
+        <label for="cpf">CPF:</label>
+        <input id="cpf" name="cpf" type="text" [(ngModel)]="formData.cpf" required />
+      </div>
 
-    <div>
-      <label for="dateOfBirth">Data de Nascimento:</label>
-      <input
-        id="dateOfBirth"
-        name="dateOfBirth"
-        type="date"
-        [(ngModel)]="formData.dateOfBirth"
-        (ngModelChange)="handleChange($event)"
-        required
-      />
-    </div>
+      <div>
+        <label for="dateOfBirth">Data de Nascimento:</label>
+        <input id="dateOfBirth" name="dateOfBirth" type="date" [(ngModel)]="formData.dateOfBirth" required />
+      </div>
 
-    <div>
-      <label for="email">Email:</label>
-      <input
-        id="email"
-        name="email"
-        type="email"
-        [(ngModel)]="formData.email"
-        (ngModelChange)="handleChange($event)"
-      />
-    </div>
+      <div>
+        <label for="gender">Sexo:</label>
+        <select id="gender" name="gender" [(ngModel)]="formData.gender" required>
+          <option value="">Selecione</option>
+          <option value="Masculino">Masculino</option>
+          <option value="Feminino">Feminino</option>
+          <option value="Outro">Outro</option>
+        </select>
+      </div>
 
-    <div>
-      <label for="phone">Telefone:</label>
-      <input
-        id="phone"
-        name="phone"
-        type="tel"
-        [(ngModel)]="formData.phone"
-        (ngModelChange)="handleChange($event)"
-      />
-    </div>
+      <div>
+        <label for="phone">Telefone:</label>
+        <input id="phone" name="phone" type="tel" [(ngModel)]="formData.phone" />
+      </div>
 
-    <div>
-      <label for="address">Endereço:</label>
-      <input
-        id="address"
-        name="address"
-        type="text"
-        [(ngModel)]="formData.address"
-        (ngModelChange)="handleChange($event)"
-      />
-    </div>
+      <div>
+        <label for="email">Email:</label>
+        <input id="email" name="email" type="email" [(ngModel)]="formData.email" />
+      </div>
 
-    <button type="submit">Salvar Alterações</button>
-  </form>
+      <div>
+        <label for="address">Endereço:</label>
+        <input id="address" name="address" type="text" [(ngModel)]="formData.address" />
+      </div>
 
-  <button class="back" (click)="goBack()">Voltar</button>
+      <button type="submit">Salvar Alterações</button>
+    </form>
+
+    <button class="back" (click)="handleCancel()">Voltar</button>
+  </ng-container>
+
+  <ng-template #notFound>
+    <p>Paciente não encontrado.</p>
+    <button class="back" (click)="handleCancel()">Voltar</button>
+  </ng-template>
 </div>

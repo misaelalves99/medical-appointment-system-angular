@@ -1,25 +1,34 @@
-// src/pages/specialty/create/create-specialty.component.ts
+// src/app/pages/specialty/create/create-specialty.component.ts
 
-import { Component, Output, EventEmitter } from '@angular/core';
-import { FormsModule } from '@angular/forms'; // <-- Import necessário
-import { CommonModule } from '@angular/common'; // Opcional, mas recomendado
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule, NgForm } from '@angular/forms';
+import { Router } from '@angular/router';
+import { SpecialtyService } from '../../../services/specialty.service';
 
 @Component({
   selector: 'app-create-specialty',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
   templateUrl: './create-specialty.component.html',
   styleUrls: ['./create-specialty.component.css'],
-  standalone: true,
-  imports: [CommonModule, FormsModule] // <-- Adicionado FormsModule
 })
 export class CreateSpecialtyComponent {
   name: string = '';
-  @Output() onSubmit = new EventEmitter<string>();
 
-  handleSubmit(): void {
-    const trimmedName = this.name.trim();
-    if (trimmedName) {
-      this.onSubmit.emit(trimmedName);
+  constructor(private specialtyService: SpecialtyService, private router: Router) {}
+
+  handleSubmit(form: NgForm) {
+    if (form.invalid) return;
+
+    if (this.name.trim()) {
+      this.specialtyService.addSpecialty(this.name.trim());
       this.name = '';
+      this.router.navigate(['/specialty']);
     }
+  }
+
+  handleCancel() {
+    this.router.navigate(['/specialty']);
   }
 }

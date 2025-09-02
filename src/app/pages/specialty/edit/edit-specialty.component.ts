@@ -1,35 +1,56 @@
-// src/pages/specialty/edit/edit-specialty.component.ts
+// src/app/pages/specialty/edit/edit-specialty.component.ts
 
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { FormsModule, NgForm } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { SpecialtyService, Specialty } from '../../../services/specialty.service';
 
 @Component({
   selector: 'app-edit-specialty',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './edit-specialty.component.html',
-  styleUrls: ['./edit-specialty.component.css']
+  styleUrls: ['./edit-specialty.component.css'],
 })
-export class EditSpecialtyComponent {
-  @Input() id!: number;
-  @Input() initialName!: string;
-  @Output() onSubmit = new EventEmitter<{ id: number; name: string }>();
-
-  name!: string;
+export class EditSpecialtyComponent implements OnInit {
+  id!: number;
+  specialty!: Specialty | undefined;
+  name: string = '';
   error: string | null = null;
 
-  ngOnInit() {
-    this.name = this.initialName;
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private specialtyService: SpecialtyService
+  ) {}
+
+  ngOnInit(): void {
+    const paramId = this.route.snapshot.paramMap.get('id');
+    this.id = paramId ? Number(paramId) : 0;
+    this.specialty = this.specialtyService.getSpecialtyById(this.id);
+
+    if (this.specialty) {
+      this.name = this.specialty.name;
+    }
   }
 
-  handleSubmit() {
-    if (!this.name || this.name.trim() === '') {
+  handleSubmit(form: NgForm) {
+    if (form.invalid) return;
+
+    if (!this.name.trim()) {
       this.error = 'O nome da especialidade é obrigatório.';
       return;
     }
+
     this.error = null;
-    this.onSubmit.emit({ id: this.id, name: this.name.trim() });
+    if (this.specialty) {
+      this.specialtyService.updateSpecialty(this.specialty.id!, this.name.trim());
+      this.router.navigate(['/specialty']);
+    }
+  }
+
+  handleCancel() {
+    this.router.navigate(['/specialty']);
   }
 }

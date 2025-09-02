@@ -1,6 +1,4 @@
-<!-- src/pages/Doctors/Details/doctor-details.component.html -->
-
-<div class="container" *ngIf="doctor">
+<div class="container" *ngIf="doctor; else loading">
   <h1>Detalhes do Médico</h1>
 
   <p><strong>Nome:</strong> {{ doctor.name }}</p>
@@ -11,7 +9,11 @@
   <p><strong>Ativo:</strong> {{ doctor.isActive ? 'Sim' : 'Não' }}</p>
 
   <div class="actions">
-    <button class="edit" (click)="onEdit(doctor.id)">Editar</button>
+    <button class="edit" (click)="onEdit()">Editar</button>
     <button class="back" (click)="onBack()">Voltar</button>
   </div>
 </div>
+
+<ng-template #loading>
+  <p>Carregando detalhes...</p>
+</ng-template>

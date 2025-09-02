@@ -1,37 +1,77 @@
-<!-- src/pages/Appointments/Edit/edit-appointment.component.html -->
+<!-- src/app/pages/appointments/edit/edit-appointment.component.html -->
 
 <div class="editAppointmentContainer">
   <h1>Editar Consulta</h1>
-  <form (ngSubmit)="handleSubmit()">
+  <form #form="ngForm" (ngSubmit)="handleSubmit(form)">
+    <!-- Paciente -->
+    <div class="form-group">
+      <label for="patientId">Paciente</label>
+      <select
+        id="patientId"
+        name="patientId"
+        [(ngModel)]="formData.patientId"
+        required
+      >
+        <option value="">-- Selecione o paciente --</option>
+        <option *ngFor="let p of patients" [value]="p.id">{{ p.name }}</option>
+      </select>
+    </div>
 
-    <label>Paciente</label>
-    <select name="patientId" [value]="formData.patientId" (change)="handleChange($event)">
-      <option value="">-- Selecione o paciente --</option>
-      <option value="1">João da Silva</option>
-      <option value="2">Maria Oliveira</option>
-    </select>
+    <!-- Médico -->
+    <div class="form-group">
+      <label for="doctorId">Médico</label>
+      <select
+        id="doctorId"
+        name="doctorId"
+        [(ngModel)]="formData.doctorId"
+        required
+      >
+        <option value="">-- Selecione o médico --</option>
+        <option *ngFor="let d of doctors" [value]="d.id">{{ d.name }}</option>
+      </select>
+    </div>
 
-    <label>Médico</label>
-    <select name="doctorId" [value]="formData.doctorId" (change)="handleChange($event)">
-      <option value="">-- Selecione o médico --</option>
-      <option value="1">Dr. Pedro Souza</option>
-      <option value="2">Dra. Ana Costa</option>
-    </select>
+    <!-- Data e hora -->
+    <div class="form-group">
+      <label for="appointmentDate">Data da Consulta</label>
+      <input
+        type="datetime-local"
+        id="appointmentDate"
+        name="appointmentDate"
+        [(ngModel)]="formData.appointmentDate"
+        required
+      />
+    </div>
 
-    <label>Data e Hora</label>
-    <input type="datetime-local" name="appointmentDate" [value]="formData.appointmentDate" (change)="handleChange($event)" />
+    <!-- Status -->
+    <div class="form-group">
+      <label for="status">Status</label>
+      <select
+        id="status"
+        name="status"
+        [(ngModel)]="formData.status"
+        required
+      >
+        <option value="">-- Selecione o status --</option>
+        <option *ngFor="let s of statusOptions" [value]="s.value">{{ s.label }}</option>
+      </select>
+    </div>
 
-    <label>Status</label>
-    <select name="status" [value]="formData.status" (change)="handleChange($event)">
-      <option value="Confirmada">Confirmada</option>
-      <option value="Cancelada">Cancelada</option>
-      <option value="Pendente">Pendente</option>
-    </select>
+    <!-- Observações -->
+    <div class="form-group">
+      <label for="notes">Observações</label>
+      <textarea
+        id="notes"
+        name="notes"
+        rows="4"
+        [(ngModel)]="formData.notes"
+      ></textarea>
+    </div>
 
-    <label>Observações</label>
-    <textarea name="notes" rows="4" [value]="formData.notes" (change)="handleChange($event)"></textarea>
-
-    <button type="submit">Salvar</button>
-    <button type="button" class="backLink" (click)="navigateToList()">Cancelar</button>
+    <!-- Botões -->
+    <div class="form-actions">
+      <button type="submit">Salvar</button>
+      <button type="button" class="btn-secondary" (click)="handleCancel()">Cancelar</button>
+    </div>
   </form>
 </div>

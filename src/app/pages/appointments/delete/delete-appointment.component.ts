@@ -1,57 +1,66 @@
-// src/pages/appointments/delete/delete-appointment.component.ts
+// src/app/pages/appointments/delete/delete-appointment.component.ts
 
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { Appointment, AppointmentStatus } from '../../../types/appointment.model';
-import { AppointmentService } from '../../../services/appointment.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { AppointmentService, Appointment } from '../../../services/appointment.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-delete-appointment',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule],
   templateUrl: './delete-appointment.component.html',
   styleUrls: ['./delete-appointment.component.css'],
 })
 export class DeleteAppointmentComponent implements OnInit {
-  private appointmentService = inject(AppointmentService);
-  private router = inject(Router);
-  private route = inject(ActivatedRoute);
-
   appointment: Appointment | null = null;
+  private sub: Subscription = new Subscription();
+
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private appointmentService: AppointmentService
+  ) {}
 
   ngOnInit(): void {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
-    this.appointmentService.getById(id).subscribe((appt) => {
-      this.appointment = appt ?? null;
-    });
+    const idParam = this.route.snapshot.paramMap.get('id');
+    const id = idParam ? Number(idParam) : undefined;
+
+    if (id != null) {
+      // inscrevendo-se no Observable para pegar todos os appointments
+      this.sub.add(
+        this.appointmentService.getAppointments().subscribe((appointments) => {
+          this.appointment = appointments.find(a => a.id === id) ?? null;
+        })
+      );
+    }
   }
 
-  handleSubmit(): void {
-    if (this.appointment && confirm(`Confirma exclusão da consulta?`)) {
+  get formattedDate(): string {
+    if (!this.appointment) return '';
+    const date = new Date(this.appointment.appointmentDate);
+    return date.toLocaleDateString();
+  }
+
+  get formattedTime(): string {
+    if (!this.appointment) return '';
+    const date = new Date(this.appointment.appointmentDate);
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+
+  handleDelete(): void {
+    if (this.appointment) {
       this.appointmentService.delete(this.appointment.id);
       this.router.navigate(['/appointments']);
     }
   }
 
-  navigateToAppointments(): void {
+  handleCancel(): void {
     this.router.navigate(['/appointments']);
   }
 
-  getStatusLabel(status: AppointmentStatus | undefined): string {
-    if (status === undefined) return 'Desconhecido';
-
-    switch (status) {
-      case AppointmentStatus.Scheduled:
-        return 'Agendada';
-      case AppointmentStatus.Confirmed:
-        return 'Confirmada';
-      case AppointmentStatus.Cancelled:
-        return 'Cancelada';
-      case AppointmentStatus.Completed:
-        return 'Concluída';
-      default:
-        return 'Desconhecido';
-    }
+  ngOnDestroy(): void {
+    this.sub.unsubscribe();
   }
 }

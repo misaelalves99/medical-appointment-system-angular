@@ -2,35 +2,54 @@
 
 <div class="container">
   <h1>Lista de Médicos</h1>
+
   <div class="actionsContainer">
-    <button class="createButton" (click)="goToCreate()">Cadastrar Novo Médico</button>
-    <input type="text" placeholder="Pesquisar médicos..." [(ngModel)]="search" class="searchInput" />
+    <button class="createButton" (click)="navigateTo('/doctors/create')">
+      Cadastrar Novo Médico
+    </button>
+    <input
+      type="text"
+      placeholder="Pesquisar por ID, Nome, CRM, Especialidade ou Status..."
+      [(ngModel)]="search"
+      (ngModelChange)="updateFilteredDoctors()"
+      class="searchInput"
+    />
   </div>
 
   <table class="table">
     <thead>
       <tr>
+        <th>ID</th>
         <th>Nome</th>
         <th>CRM</th>
         <th>Especialidade</th>
-        <th>Email</th>
-        <th>Telefone</th>
         <th>Ativo</th>
         <th>Ações</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let doctor of filteredDoctors">
+        <td>{{ doctor.id }}</td>
         <td>{{ doctor.name }}</td>
         <td>{{ doctor.crm }}</td>
         <td>{{ doctor.specialty }}</td>
-        <td>{{ doctor.email }}</td>
-        <td>{{ doctor.phone }}</td>
         <td>{{ doctor.isActive ? 'Sim' : 'Não' }}</td>
-        <td>
-          <button class="detailsButton" (click)="goToDetails(doctor.id)">Detalhes</button>
-          <button class="editButton" (click)="goToEdit(doctor.id)">Editar</button>
-          <button class="deleteButton" (click)="goToDelete(doctor.id)">Excluir</button>
+        <td class="actionsColumn">
+          <button class="detailsButton" (click)="navigateTo('/doctors/details/' + doctor.id)">
+            Detalhes
+          </button>
+          <button class="editButton" (click)="navigateTo('/doctors/edit/' + doctor.id)">
+            Editar
+          </button>
+          <button class="deleteButton" (click)="navigateTo('/doctors/delete/' + doctor.id)">
+            Excluir
+          </button>
+        </td>
+      </tr>
+
+      <tr *ngIf="filteredDoctors.length === 0">
+        <td colspan="6" class="noResults">
+          Nenhum médico encontrado.
         </td>
       </tr>
     </tbody>

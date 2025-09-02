@@ -1,18 +1,23 @@
-<!-- src/pages/specialty/create/create-specialty.component.html -->
+<!-- src/app/pages/specialty/create/create-specialty.component.html -->
 
 <div class="createSpecialtyContainer">
   <h1>Cadastrar Nova Especialidade</h1>
-  <form (ngSubmit)="handleSubmit()">
+
+  <form #form="ngForm" (ngSubmit)="handleSubmit(form)">
     <div>
       <label for="specialtyName">Nome da Especialidade:</label>
       <input
         id="specialtyName"
         type="text"
-        [(ngModel)]="name"
         name="specialtyName"
+        [(ngModel)]="name"
         required
       />
     </div>
-    <button type="submit">Salvar</button>
+
+    <div class="actions">
+      <button type="submit">Salvar</button>
+      <button type="button" class="back" (click)="handleCancel()">Voltar</button>
+    </div>
   </form>
 </div>

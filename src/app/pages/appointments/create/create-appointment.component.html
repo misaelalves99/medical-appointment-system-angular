@@ -2,7 +2,7 @@
 
 <div class="createAppointmentContainer">
   <h1>Nova Consulta</h1>
-  <form (ngSubmit)="handleSubmit()" #appointmentForm="ngForm">
+  <form #form="ngForm" (ngSubmit)="handleSubmit(form)">
     <!-- Paciente -->
     <div class="form-group">
       <label for="patientId">Paciente</label>
@@ -10,9 +10,10 @@
         id="patientId"
         name="patientId"
         [(ngModel)]="formData.patientId"
+        required
       >
         <option value="">-- Selecione o paciente --</option>
-        <option *ngFor="let p of patients" [value]="p.value">{{ p.label }}</option>
+        <option *ngFor="let p of patients" [value]="p.id">{{ p.name }}</option>
       </select>
     </div>
 
@@ -23,20 +24,22 @@
         id="doctorId"
         name="doctorId"
         [(ngModel)]="formData.doctorId"
+        required
       >
         <option value="">-- Selecione o médico --</option>
-        <option *ngFor="let d of doctors" [value]="d.value">{{ d.label }}</option>
+        <option *ngFor="let d of doctors" [value]="d.id">{{ d.name }}</option>
       </select>
     </div>
 
-    <!-- Data -->
+    <!-- Data da consulta -->
     <div class="form-group">
       <label for="appointmentDate">Data da Consulta</label>
       <input
-        type="datetime-local"
         id="appointmentDate"
         name="appointmentDate"
+        type="datetime-local"
         [(ngModel)]="formData.appointmentDate"
+        required
       />
     </div>
 
@@ -47,6 +50,7 @@
         id="status"
         name="status"
         [(ngModel)]="formData.status"
+        required
       >
         <option value="">-- Selecione o status --</option>
         <option *ngFor="let s of statusOptions" [value]="s.value">{{ s.label }}</option>
@@ -65,7 +69,9 @@
     </div>
 
     <!-- Botões -->
-    <button type="submit">Salvar</button>
-    <button type="button" (click)="handleCancel()" class="btn-secondary">Cancelar</button>
+    <div class="form-actions">
+      <button type="submit">Salvar</button>
+      <button type="button" class="btn-secondary" (click)="handleCancel()">Cancelar</button>
+    </div>
   </form>
 </div>

@@ -1,35 +1,40 @@
-// src/pages/specialty/delete/delete-specialty.component.ts
+// src/app/pages/specialty/delete/delete-specialty.component.ts
 
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { Specialty } from '../../../types/specialty.model';
-import { SpecialtyService } from '../../../services/specialty.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { SpecialtyService, Specialty } from '../../../services/specialty.service';
 
 @Component({
   selector: 'app-delete-specialty',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule],
   templateUrl: './delete-specialty.component.html',
   styleUrls: ['./delete-specialty.component.css']
 })
 export class DeleteSpecialtyComponent implements OnInit {
-  private specialtyService = inject(SpecialtyService);
-  private router = inject(Router);
-  private route = inject(ActivatedRoute);
-
   specialty: Specialty | null = null;
 
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private specialtyService: SpecialtyService
+  ) {}
+
   ngOnInit(): void {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
-    this.specialtyService.getById(id).subscribe((s) => {
-      this.specialty = s ?? null;
-    });
+    const idParam = this.route.snapshot.paramMap.get('id');
+    const id = idParam ? Number(idParam) : undefined;
+
+    if (id != null) {
+      // usar o método correto do serviço
+      this.specialty = this.specialtyService.getSpecialtyById(id) ?? null;
+    }
   }
 
-  handleSubmit(): void {
-    if (this.specialty && confirm(`Confirma exclusão da especialidade: ${this.specialty.name}?`)) {
-      this.specialtyService.delete(this.specialty.id);
+  handleDelete(): void {
+    if (this.specialty && this.specialty.id != null) {
+      this.specialtyService.deleteSpecialty(this.specialty.id);
+      console.log('Especialidade excluída:', this.specialty);
       this.router.navigate(['/specialty']);
     }
   }

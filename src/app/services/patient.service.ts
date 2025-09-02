@@ -1,17 +1,15 @@
-// src/app/services/patient.service.ts
-
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 
 export interface Patient {
-  id: number;
+  id?: number;
   name: string;
   cpf: string;
-  dateOfBirth: string; // ISO string
+  dateOfBirth: string;
   email: string;
   phone: string;
   address: string;
-  gender: string;
+  gender?: string;
 }
 
 @Injectable({
@@ -42,28 +40,43 @@ export class PatientService {
   ];
 
   private patientsSubject = new BehaviorSubject<Patient[]>([...this.patients]);
+  patients$ = this.patientsSubject.asObservable();
 
+  /** 🔹 Retorna todos os pacientes como Observable */
   getPatients(): Observable<Patient[]> {
-    return this.patientsSubject.asObservable();
+    return this.patients$;
   }
 
+  /** 🔹 Retorna paciente por ID */
   getById(id: number): Observable<Patient | undefined> {
     return of(this.patients.find(p => p.id === id));
   }
 
+  /** 🔹 Retorna próximo ID disponível */
+  getNextId(): number {
+    return this.patients.length
+      ? Math.max(...this.patients.map(p => p.id ?? 0)) + 1
+      : 1;
+  }
+
+  /** 🔹 Adiciona paciente */
   add(patient: Patient) {
-    this.patients.push(patient);
+    const newPatient: Patient = { ...patient, id: this.getNextId() };
+    this.patients.push(newPatient);
     this.patientsSubject.next([...this.patients]);
   }
 
+  /** 🔹 Atualiza paciente */
   update(updated: Patient) {
+    if (updated.id == null) return;
     const index = this.patients.findIndex(p => p.id === updated.id);
     if (index !== -1) {
-      this.patients[index] = updated;
+      this.patients[index] = { ...updated };
       this.patientsSubject.next([...this.patients]);
     }
   }
 
+  /** 🔹 Remove paciente */
   delete(id: number) {
     this.patients = this.patients.filter(p => p.id !== id);
     this.patientsSubject.next([...this.patients]);

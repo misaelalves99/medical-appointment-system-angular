@@ -1,67 +1,60 @@
 // src/app/pages/appointments/appointments-page.component.ts
 
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
-import { RouterModule } from '@angular/router';
-import { Appointment, AppointmentStatus } from '../../types/appointment.model';
-import { AppointmentService } from '../../services/appointment.service';
-import { getAppointmentStatusLabel } from '../../utils/enum-helpers';
 import { FormsModule } from '@angular/forms';
+import { RouterModule, Router } from '@angular/router';
+import { AppointmentService, Appointment, AppointmentStatus } from '../../services/appointment.service';
 
 @Component({
-  selector: 'app-appointments-page',
+  selector: 'app-appointment-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './appointments-page.component.html',
   styleUrls: ['./appointments-page.component.css'],
 })
-export class AppointmentsPageComponent implements OnInit {
-  private appointmentService = inject(AppointmentService);
-
+export class AppointmentListComponent {
+  search: string = '';
   appointments: Appointment[] = [];
-  loading = true;
-  search = '';
+  filteredAppointments: Appointment[] = [];
 
-  ngOnInit(): void {
-    this.loading = true;
-    this.appointmentService.getAppointments().subscribe((data) => {
-      this.appointments = data;
-      this.loading = false;
+  constructor(private router: Router, private appointmentService: AppointmentService) {
+    this.appointmentService.appointments$.subscribe(a => {
+      this.appointments = a;
+      this.updateFilteredAppointments();
     });
   }
 
-  handleDelete(id: number) {
-    if (!confirm('Confirma exclusão da consulta?')) return;
-
-    this.appointmentService.delete(id);
-    // atualiza a lista localmente
-    this.appointments = this.appointments.filter((a) => a.id !== id);
-  }
-
-  get filteredAppointments() {
+  updateFilteredAppointments() {
     const searchLower = this.search.toLowerCase();
-
-    return this.appointments.filter((a) => {
+    this.filteredAppointments = this.appointments.filter(a => {
       const dt = new Date(a.appointmentDate);
       const dateStr = dt.toLocaleDateString().toLowerCase();
-      const timeStr = dt
-        .toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-        .toLowerCase();
-      const patientStr = a.patientId ? `paciente id: ${a.patientId}` : '';
-      const doctorStr = a.doctorId ? `médico id: ${a.doctorId}` : '';
-      const statusStr = getAppointmentStatusLabel(a.status).toLowerCase();
+      const timeStr = dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }).toLowerCase();
+      const patientStr = a.patientName ? a.patientName.toLowerCase() : '';
+      const statusStr = this.getStatusLabel(a.status).toLowerCase();
 
       return (
         dateStr.includes(searchLower) ||
         timeStr.includes(searchLower) ||
         patientStr.includes(searchLower) ||
-        doctorStr.includes(searchLower) ||
-        statusStr.includes(searchLower)
+        statusStr.includes(searchLower) ||
+        String(a.id).includes(searchLower)
       );
     });
   }
 
-  getStatusLabel(status: AppointmentStatus) {
-    return getAppointmentStatusLabel(status);
+  getStatusLabel(status: AppointmentStatus): string {
+    switch(status) {
+      case AppointmentStatus.Pending: return 'Pendente';
+      case AppointmentStatus.Confirmed: return 'Confirmada';
+      case AppointmentStatus.Cancelled: return 'Cancelada';
+      case AppointmentStatus.Completed: return 'Concluída';
+      default: return status;
+    }
+  }
+
+  navigateTo(path: string) {
+    this.router.navigate([path]);
   }
 }

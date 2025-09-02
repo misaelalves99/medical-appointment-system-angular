@@ -1,48 +1,41 @@
 // src/pages/specialty/specialty-list.component.ts
 
-import { Component, inject, OnInit } from '@angular/core';
-import { Router, RouterModule } from '@angular/router';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Specialty } from '../../types/specialty.model';
-import { SpecialtyService } from '../../services/specialty.service';
 import { FormsModule } from '@angular/forms';
+import { RouterModule, Router } from '@angular/router';
+import { Specialty, SpecialtyService } from '../../services/specialty.service';
 
 @Component({
   selector: 'app-specialty-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './specialty-list.component.html',
   styleUrls: ['./specialty-list.component.css']
 })
-export class SpecialtyListComponent implements OnInit {
-  private specialtyService = inject(SpecialtyService);
-  private router = inject(Router);
-
-  specialties: Specialty[] = [];
+export class SpecialtyListComponent {
   filter: string = '';
+  specialties: Specialty[] = [];
+  filteredSpecialties: Specialty[] = [];
 
-  ngOnInit(): void {
-    this.loadSpecialties();
-  }
-
-  loadSpecialties(): void {
-    this.specialtyService.getSpecialties().subscribe((data: Specialty[]) => {
-      this.specialties = data;
+  constructor(private router: Router, private specialtyService: SpecialtyService) {
+    this.specialtyService.specialties$.subscribe(s => {
+      this.specialties = s;
+      this.updateFilteredSpecialties();
     });
   }
 
-  get filteredSpecialties(): Specialty[] {
+  updateFilteredSpecialties() {
     const filterLower = this.filter.toLowerCase();
-    return this.specialties
-      .filter(
-        (s) =>
-          s.name.toLowerCase().includes(filterLower) ||
-          s.id.toString().includes(this.filter)
+    this.filteredSpecialties = this.specialties
+      .filter(s =>
+        (s.name?.toLowerCase().includes(filterLower)) ||
+        (s.id?.toString().includes(filterLower))
       )
-      .sort((a, b) => a.name.localeCompare(b.name));
+      .sort((a, b) => (a.name ?? '').localeCompare(b.name ?? ''));
   }
 
-  goTo(path: string): void {
+  navigateTo(path: string) {
     this.router.navigate([path]);
   }
 }

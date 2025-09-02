@@ -1,41 +1,44 @@
 // src/pages/Patient/patient-index.component.ts
 
-import { Component, inject, OnInit } from '@angular/core';
+// src/pages/Patient/patient-index.component.ts
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { Patient } from '../../types/patient.model';
-import { PatientService } from '../../services/patient.service';
 import { FormsModule } from '@angular/forms';
+import { RouterModule, Router } from '@angular/router';
+import { PatientService, Patient } from '../../services/patient.service';
 
 @Component({
   selector: 'app-patient-index',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './patient-index.component.html',
   styleUrls: ['./patient-index.component.css']
 })
-export class PatientIndexComponent implements OnInit {
-  private patientService = inject(PatientService);
-
-  patients: Patient[] = [];
+export class PatientIndexComponent {
   search: string = '';
+  patients: Patient[] = [];
+  filteredPatients: Patient[] = [];
 
-  ngOnInit(): void {
-    this.loadPatients();
-  }
-
-  loadPatients(): void {
-    this.patientService.getPatients().subscribe((data: Patient[]) => {
-      this.patients = data;
+  constructor(private router: Router, private patientService: PatientService) {
+    this.patientService.patients$.subscribe((p: Patient[]) => {
+      this.patients = p;
+      this.updateFilteredPatients();
     });
   }
 
-  get filteredPatients(): Patient[] {
+  updateFilteredPatients() {
     const searchLower = this.search.toLowerCase();
-    return this.patients.filter((p) =>
-      [p.name, p.cpf, p.email, p.phone].some((field) =>
-        field.toLowerCase().includes(searchLower)
-      )
+    this.filteredPatients = this.patients.filter(p =>
+      [
+        p.id?.toString() ?? '', 
+        p.name ?? '', 
+        p.cpf ?? '', 
+        p.phone ?? ''
+      ].some(field => field.toLowerCase().includes(searchLower))
     );
+  }
+
+  navigateTo(path: string) {
+    this.router.navigate([path]);
   }
 }

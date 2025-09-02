@@ -1,35 +1,42 @@
-// src/pages/patient/delete/delete-patient.component.ts
+// src/app/pages/patient/delete/delete-patient.component.ts
 
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { Patient } from '../../../types/patient.model';
-import { PatientService } from '../../../services/patient.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { PatientService, Patient } from '../../../services/patient.service';
+import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-delete-patient',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule],
   templateUrl: './delete-patient.component.html',
-  styleUrls: ['./delete-patient.component.css']
+  styleUrls: ['./delete-patient.component.css'],
 })
 export class DeletePatientComponent implements OnInit {
-  private patientService = inject(PatientService);
-  private router = inject(Router);
-  private route = inject(ActivatedRoute);
-
   patient: Patient | null = null;
 
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private patientService: PatientService
+  ) {}
+
   ngOnInit(): void {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
-    this.patientService.getById(id).subscribe((p) => {
-      this.patient = p ?? null;
-    });
+    const idParam = this.route.snapshot.paramMap.get('id');
+    const id = idParam ? Number(idParam) : undefined;
+
+    if (id != null) {
+      this.patientService.getById(id).subscribe((patient) => {
+        this.patient = patient ?? null;
+      });
+    }
   }
 
-  handleSubmit(): void {
-    if (this.patient && confirm(`Confirma exclusão do paciente: ${this.patient.name}?`)) {
-      this.patientService.delete(this.patient.id!); // <-- uso do '!'
+  handleDelete(): void {
+    if (this.patient && this.patient.id != null) {
+      this.patientService.delete(this.patient.id);
+      console.log('Paciente excluído:', this.patient);
       this.router.navigate(['/patient']);
     }
   }

@@ -1,19 +1,14 @@
-<!-- src/pages/Patient/Delete/delete-patient.component.html -->
+<!-- src/app/pages/patient/delete/delete-patient.component.html -->
 
-<div class="deletePatientContainer" *ngIf="patient; else loading">
+<div class="container" *ngIf="patient; else loading">
   <h1>Confirmar Exclusão</h1>
   <p>
-    Tem certeza de que deseja excluir o paciente <strong>{{ patient.name }}</strong>?
+    Tem certeza de que deseja excluir o paciente
+    <strong>{{ patient.name }}</strong>?
   </p>
 
-  <form (ngSubmit)="handleSubmit()">
-    <button type="submit" class="btnDelete">
-      Excluir
-    </button>
-    <button type="button" class="btnCancel" (click)="handleCancel()">
-      Cancelar
-    </button>
-  </form>
+  <button (click)="handleDelete()" class="deleteButton">Excluir</button>
+  <button (click)="handleCancel()" class="cancelButton">Cancelar</button>
 </div>
 
 <ng-template #loading>

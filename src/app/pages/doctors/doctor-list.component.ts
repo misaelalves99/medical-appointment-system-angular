@@ -1,58 +1,44 @@
 // src/pages/Doctors/doctor-list.component.ts
 
-import { Component, inject, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
-import { Doctor } from '../../types/doctor.model';
-import { DoctorService } from '../../services/doctor.service';
 import { FormsModule } from '@angular/forms';
+import { RouterModule, Router } from '@angular/router';
+import { DoctorService, Doctor } from '../../services/doctor.service';
 
 @Component({
   selector: 'app-doctor-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './doctor-list.component.html',
   styleUrls: ['./doctor-list.component.css']
 })
-export class DoctorListComponent implements OnInit {
-  private doctorService = inject(DoctorService);
-  private router = inject(Router);
-
-  doctors: Doctor[] = [];
+export class DoctorListComponent {
   search: string = '';
+  doctors: Doctor[] = [];
+  filteredDoctors: Doctor[] = [];
 
-  ngOnInit(): void {
-    this.loadDoctors();
-  }
-
-  loadDoctors() {
-    this.doctorService.getDoctors().subscribe((data: Doctor[]) => {
-      this.doctors = data;
+  constructor(private router: Router, private doctorService: DoctorService) {
+    this.doctorService.doctors$.subscribe((d: Doctor[]) => {
+      this.doctors = d;
+      this.updateFilteredDoctors();
     });
   }
 
-  get filteredDoctors(): Doctor[] {
+  updateFilteredDoctors() {
     const searchLower = this.search.toLowerCase();
-    return this.doctors.filter((doctor) =>
-      Object.values(doctor).some((value) =>
-        String(value).toLowerCase().includes(searchLower)
-      )
+    this.filteredDoctors = this.doctors.filter(d =>
+      [
+        d.id?.toString() ?? '',
+        d.name ?? '',
+        d.crm ?? '',
+        d.specialty ?? '',
+        d.isActive ? 'sim' : 'não'
+      ].some(field => field.toLowerCase().includes(searchLower))
     );
   }
 
-  goToCreate() {
-    this.router.navigate(['/doctors/create']);
-  }
-
-  goToDetails(id: number) {
-    this.router.navigate([`/doctors/details/${id}`]);
-  }
-
-  goToEdit(id: number) {
-    this.router.navigate([`/doctors/edit/${id}`]);
-  }
-
-  goToDelete(id: number) {
-    this.router.navigate([`/doctors/delete/${id}`]);
+  navigateTo(path: string) {
+    this.router.navigate([path]);
   }
 }

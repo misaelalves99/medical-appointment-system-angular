@@ -1,50 +1,64 @@
-// src/pages/patient/edit/edit-patient.component.ts
+// src/app/pages/patient/edit/edit-patient.component.ts
 
-import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { Router } from '@angular/router';
-import { FormsModule } from '@angular/forms'; // <-- Import necessário
-import { CommonModule } from '@angular/common'; // Opcional, mas recomendado para ngIf/ngFor etc.
-
-export interface PatientEditForm {
-  id: number;
-  name: string;
-  cpf: string;
-  dateOfBirth: string; // ISO date string
-  email: string;
-  phone: string;
-  address: string;
-}
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule, NgForm } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { PatientService, Patient } from '../../../services/patient.service';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-edit-patient',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
   templateUrl: './edit-patient.component.html',
   styleUrls: ['./edit-patient.component.css'],
-  standalone: true,
-  imports: [CommonModule, FormsModule] // <-- Adicionado FormsModule
 })
-export class EditPatientComponent {
-  @Input() initialData!: PatientEditForm;
-  @Output() onSave = new EventEmitter<PatientEditForm>();
+export class EditPatientComponent implements OnInit {
+  formData: Partial<Patient> = {
+    name: '',
+    cpf: '',
+    dateOfBirth: '',
+    email: '',
+    phone: '',
+    address: '',
+    gender: '',
+  };
+  patientId!: number;
+  existingPatient?: Patient;
 
-  formData!: PatientEditForm;
-
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+    private patientService: PatientService
+  ) {}
 
   ngOnInit(): void {
-    this.formData = { ...this.initialData };
+    this.patientId = Number(this.route.snapshot.paramMap.get('id'));
+
+    // Assinando o Observable para obter o paciente
+    this.patientService.getById(this.patientId)
+      .pipe(take(1)) // pega apenas um valor e completa
+      .subscribe((patient) => {
+        if (patient) {
+          this.existingPatient = patient;
+          this.formData = { ...patient };
+        } else {
+          // Caso não encontre, redireciona para a lista de pacientes
+          this.router.navigate(['/patient']);
+        }
+      });
   }
 
-  handleChange(event: Event): void {
-    const target = event.target as HTMLInputElement;
-    const { name, value } = target;
-    (this.formData as any)[name] = value;
+  handleSubmit(form: NgForm) {
+    if (!this.existingPatient || form.invalid) return;
+
+    const updatedPatient: Patient = { ...this.formData, id: this.existingPatient.id } as Patient;
+    this.patientService.update(updatedPatient);
+    this.router.navigate(['/patient']);
   }
 
-  handleSubmit(): void {
-    this.onSave.emit(this.formData);
-  }
-
-  goBack(): void {
+  handleCancel() {
     this.router.navigate(['/patient']);
   }
 }

@@ -8,32 +8,37 @@
 
     <input
       type="text"
-      placeholder="Pesquisar por Nome, CPF, Email ou Telefone..."
+      placeholder="Pesquisar por ID, Nome, CPF ou Telefone..."
       [(ngModel)]="search"
+      (ngModelChange)="updateFilteredPatients()"
       class="searchInput"
     />
   </div>
 
-  <table>
+  <p *ngIf="filteredPatients.length === 0" class="noResults">
+    Nenhum paciente encontrado.
+  </p>
+
+  <table *ngIf="filteredPatients.length > 0" class="table">
     <thead>
       <tr>
+        <th>ID</th>
         <th>Nome</th>
         <th>CPF</th>
-        <th>Email</th>
         <th>Telefone</th>
         <th>Ações</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let patient of filteredPatients">
+        <td>{{ patient.id }}</td>
         <td>{{ patient.name }}</td>
         <td>{{ patient.cpf }}</td>
-        <td>{{ patient.email }}</td>
-        <td>{{ patient.phone }}</td>
-        <td>
-          <a [routerLink]="['/patient/details', patient.id]" class="detailsLink">Detalhes</a>
-          <a [routerLink]="['/patient/edit', patient.id]" class="editLink">Editar</a>
-          <a [routerLink]="['/patient/delete', patient.id]" class="deleteLink">Excluir</a>
+        <td>{{ patient.phone || '-' }}</td>
+        <td class="actionsColumn">
+          <button (click)="navigateTo('/patient/details/' + patient.id)" class="detailsLink">Detalhes</button>
+          <button (click)="navigateTo('/patient/edit/' + patient.id)" class="editLink">Editar</button>
+          <button (click)="navigateTo('/patient/delete/' + patient.id)" class="deleteLink">Excluir</button>
         </td>
       </tr>
     </tbody>

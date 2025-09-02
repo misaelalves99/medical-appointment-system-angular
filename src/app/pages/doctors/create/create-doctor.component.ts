@@ -1,65 +1,58 @@
-// src/pages/Doctors/Create/create-doctor.component.ts
+// src/app/pages/doctors/create/create-doctor.component.ts
 
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule, NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
-
-export interface Doctor {
-  id: number;
-  name: string;
-  crm: string;
-  specialty: string;
-  email: string;
-  phone: string;
-  isActive: boolean;
-}
-
-// Mock inicial
-export let doctorsMock: Doctor[] = [];
+import { DoctorService, Doctor } from '../../../services/doctor.service';
+import { SpecialtyService, Specialty } from '../../../services/specialty.service';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-create-doctor',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './create-doctor.component.html',
-  styleUrls: ['./create-doctor.component.css']
+  styleUrls: ['./create-doctor.component.css'],
 })
-export class CreateDoctorComponent {
-  form: Doctor = {
-    id: 0,
+export class CreateDoctorComponent implements OnInit {
+  formData: Partial<Doctor> = {
     name: '',
     crm: '',
     specialty: '',
     email: '',
     phone: '',
-    isActive: false
+    isActive: false,
   };
 
-  constructor(private router: Router) {}
+  specialties: Specialty[] = [];
 
-  handleChange(event: Event) {
-    const target = event.target as HTMLInputElement | HTMLSelectElement;
-    let value: string | boolean = target.value;
+  constructor(
+    private router: Router,
+    private doctorService: DoctorService,
+    private specialtyService: SpecialtyService
+  ) {}
 
-    if (target instanceof HTMLInputElement && target.type === 'checkbox') {
-      value = target.checked;
-    }
-
-    const name = target.name as keyof Doctor;
-    this.form = { ...this.form, [name]: value };
+  ngOnInit(): void {
+    // Corrigido: assinando o Observable
+    this.specialtyService.getSpecialties()
+      .pipe(take(1))
+      .subscribe((specialties) => {
+        this.specialties = specialties;
+      });
   }
 
-  handleSubmit() {
-    const newId = doctorsMock.length > 0 ? Math.max(...doctorsMock.map(d => d.id)) + 1 : 1;
-    doctorsMock.push({ ...this.form, id: newId });
+  handleSubmit(form: NgForm) {
+    if (form.invalid) return;
 
-    console.log('Novo médico adicionado:', { ...this.form, id: newId });
-    console.log('Lista atualizada de médicos:', doctorsMock);
+    // Corrigido: não usamos mais getNextId, pois o service já trata isso
+    const newDoctor: Doctor = { ...this.formData } as Doctor;
+    this.doctorService.add(newDoctor);
 
     this.router.navigate(['/doctors']);
   }
 
-  cancel() {
+  handleCancel() {
     this.router.navigate(['/doctors']);
   }
 }

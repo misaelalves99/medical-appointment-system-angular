@@ -1,28 +1,46 @@
-// src/pages/patient/details/details-patient.component.ts
+// src/app/pages/patient/details/details-patient.component.ts
 
-import { Component, Input } from '@angular/core';
-import { Router } from '@angular/router';
-
-export interface Patient {
-  id: number;
-  name: string;
-  dateOfBirth: string; // ISO date string
-  gender: string;
-  phone?: string;
-  email?: string;
-  // profilePicturePath?: string; // Uncomment if using photo
-}
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Patient, PatientService } from '../../../services/patient.service';
+import { CommonModule } from '@angular/common'; // necessário para *ngIf, *ngFor
 
 @Component({
   selector: 'app-details-patient',
   templateUrl: './details-patient.component.html',
   styleUrls: ['./details-patient.component.css'],
-  standalone: true
+  standalone: true,
+  imports: [CommonModule] // 🔹 IMPORTANTE
 })
-export class DetailsPatientComponent {
-  @Input() patient!: Patient;
+export class DetailsPatientComponent implements OnInit {
+  patient?: Patient;
+  loading = true;
 
-  constructor(private router: Router) {}
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private patientService: PatientService
+  ) {}
+
+  ngOnInit(): void {
+    const idParam = this.route.snapshot.paramMap.get('id');
+    const id = idParam ? +idParam : null;
+
+    if (id != null) {
+      this.patientService.getById(id).subscribe(p => {
+        if (p) {
+          this.patient = p;
+        } else {
+          alert('Paciente não encontrado!');
+          this.goBack();
+        }
+        this.loading = false;
+      });
+    } else {
+      alert('ID inválido!');
+      this.goBack();
+    }
+  }
 
   formatDate(isoDate: string): string {
     const date = new Date(isoDate);
@@ -30,7 +48,9 @@ export class DetailsPatientComponent {
   }
 
   goToEdit(): void {
-    this.router.navigate([`/patient/edit/${this.patient.id}`]);
+    if (this.patient?.id != null) {
+      this.router.navigate([`/patient/edit/${this.patient.id}`]);
+    }
   }
 
   goBack(): void {

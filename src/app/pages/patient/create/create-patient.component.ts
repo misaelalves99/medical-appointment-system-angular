@@ -1,20 +1,10 @@
-// src/pages/Patient/Create/create-patient.component.ts
+// src/app/pages/patient/create/create-patient.component.ts
 
-import { Component, inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { PatientService, Patient } from '../../../services/patient.service';
-
-interface PatientCreateForm {
-  name: string;
-  cpf: string;
-  dateOfBirth: string;
-  gender: string;
-  phone: string;
-  email: string;
-  address: string;
-}
 
 @Component({
   selector: 'app-create-patient',
@@ -24,29 +14,28 @@ interface PatientCreateForm {
   styleUrls: ['./create-patient.component.css'],
 })
 export class CreatePatientComponent {
-  private patientService = inject(PatientService);
-  private router = inject(Router);
-
-  formData: PatientCreateForm = {
+  formData: Partial<Patient> = {
     name: '',
     cpf: '',
     dateOfBirth: '',
-    gender: '',
-    phone: '',
     email: '',
+    phone: '',
     address: '',
+    gender: '',
   };
 
-  handleSubmit(): void {
-    const newPatient: Patient = {
-      id: Date.now(), // gera um ID simples para simulação
-      ...this.formData,
-    };
+  constructor(private router: Router, private patientService: PatientService) {}
 
-    this.patientService.add(newPatient);
+  handleSubmit(form: NgForm) {
+    if (form.invalid) return;
 
-    console.log('Novo paciente cadastrado:', newPatient);
+    // Cria novo paciente usando add() que gera ID automaticamente
+    this.patientService.add(this.formData as Patient);
 
-    this.router.navigate(['/patient']); // redireciona para a listagem
+    this.router.navigate(['/patient']);
+  }
+
+  handleCancel() {
+    this.router.navigate(['/patient']);
   }
 }

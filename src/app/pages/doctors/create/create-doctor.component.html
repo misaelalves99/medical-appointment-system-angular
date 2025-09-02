@@ -1,39 +1,43 @@
-<!-- src/pages/Doctors/Create/create-doctor.component.html -->
+<!-- src/app/pages/doctors/create/create-doctor.component.html -->
 
 <div class="container">
   <h1>Cadastrar Médico</h1>
-  <form (ngSubmit)="handleSubmit()">
+
+  <form #form="ngForm" (ngSubmit)="handleSubmit(form)">
     <div>
       <label for="name">Nome</label>
-      <input id="name" name="name" type="text" required [value]="form.name" (input)="handleChange($event)" />
+      <input id="name" name="name" type="text" [(ngModel)]="formData.name" required />
     </div>
 
     <div>
       <label for="crm">CRM</label>
-      <input id="crm" name="crm" type="text" required [value]="form.crm" (input)="handleChange($event)" />
+      <input id="crm" name="crm" type="text" [(ngModel)]="formData.crm" required />
     </div>
 
     <div>
       <label for="specialty">Especialidade</label>
-      <input id="specialty" name="specialty" type="text" required [value]="form.specialty" (input)="handleChange($event)" />
+      <select id="specialty" name="specialty" [(ngModel)]="formData.specialty" required>
+        <option value="">Selecione uma especialidade</option>
+        <option *ngFor="let s of specialties" [value]="s.name">{{ s.name }}</option>
+      </select>
     </div>
 
     <div>
       <label for="email">Email</label>
-      <input id="email" name="email" type="email" required [value]="form.email" (input)="handleChange($event)" />
+      <input id="email" name="email" type="email" [(ngModel)]="formData.email" required />
     </div>
 
     <div>
       <label for="phone">Telefone</label>
-      <input id="phone" name="phone" type="tel" required [value]="form.phone" (input)="handleChange($event)" />
+      <input id="phone" name="phone" type="tel" [(ngModel)]="formData.phone" required />
     </div>
 
-    <div>
-      <label for="isActive">Ativo</label>
-      <input id="isActive" name="isActive" type="checkbox" [checked]="form.isActive" (change)="handleChange($event)" />
-    </div>
+    <label class="checkboxLabel">
+      <input type="checkbox" name="isActive" [(ngModel)]="formData.isActive" />
+      Ativo
+    </label>
 
     <button type="submit">Salvar</button>
-    <button type="button" (click)="cancel()">Cancelar</button>
+    <button type="button" (click)="handleCancel()">Cancelar</button>
   </form>
 </div>

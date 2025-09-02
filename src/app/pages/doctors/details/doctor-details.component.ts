@@ -1,18 +1,8 @@
 // src/pages/Doctors/Details/doctor-details.component.ts
-
-import { Component, Input } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
-
-export interface Doctor {
-  id: number;
-  name: string;
-  crm: string;
-  specialty: string;
-  email: string;
-  phone: string;
-  isActive: boolean;
-}
+import { Router, ActivatedRoute } from '@angular/router';
+import { DoctorService, Doctor } from '../../../services/doctor.service';
 
 @Component({
   selector: 'app-doctor-details',
@@ -21,13 +11,35 @@ export interface Doctor {
   templateUrl: './doctor-details.component.html',
   styleUrls: ['./doctor-details.component.css']
 })
-export class DoctorDetailsComponent {
-  @Input() doctor!: Doctor;
+export class DoctorDetailsComponent implements OnInit {
+  doctor?: Doctor;
 
-  constructor(private router: Router) {}
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private doctorService: DoctorService
+  ) {}
 
-  onEdit(id: number) {
-    this.router.navigate([`/doctors/edit/${id}`]);
+  ngOnInit() {
+    const id = Number(this.route.snapshot.paramMap.get('id'));
+    if (!id) {
+      this.router.navigate(['/doctors']);
+      return;
+    }
+
+    this.doctorService.getById(id).subscribe(doc => {
+      if (!doc) {
+        this.router.navigate(['/doctors']);
+      } else {
+        this.doctor = doc;
+      }
+    });
+  }
+
+  onEdit() {
+    if (this.doctor?.id) {
+      this.router.navigate(['/doctors/edit', this.doctor.id]);
+    }
   }
 
   onBack() {

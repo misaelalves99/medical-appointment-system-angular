@@ -1,26 +1,30 @@
-<!-- src/pages/patient/details/details-patient.component.html -->
+<!-- src/app/pages/patient/details/details-patient.component.html -->
 
-<div class="patientDetailsContainer">
+<div class="detailsContainer" *ngIf="!loading; else loadingTemplate">
   <h1>Detalhes do Paciente</h1>
 
-  <!-- Exemplo imagem se quiser usar -->
-  <!--
-  <img
-    *ngIf="patient.profilePicturePath"
-    [src]="patient.profilePicturePath"
-    alt="Foto do Paciente"
-    class="profileImage"
-  />
-  -->
+  <div *ngIf="patient; else noDataTemplate">
+    <p><strong>ID:</strong> {{ patient.id }}</p>
+    <p><strong>Nome:</strong> {{ patient.name }}</p>
+    <p><strong>Data de Nascimento:</strong> {{ formatDate(patient.dateOfBirth) }}</p>
+    <p><strong>Gênero:</strong> {{ patient.gender }}</p>
+    <p><strong>CPF:</strong> {{ patient.cpf }}</p>
+    <p><strong>E-mail:</strong> {{ patient.email }}</p>
+    <p><strong>Telefone:</strong> {{ patient.phone }}</p>
+    <p><strong>Endereço:</strong> {{ patient.address }}</p>
 
-  <p><strong>Nome:</strong> {{ patient.name }}</p>
-  <p><strong>Data de Nascimento:</strong> {{ formatDate(patient.dateOfBirth) }}</p>
-  <p><strong>Sexo:</strong> {{ patient.gender }}</p>
-  <p><strong>Telefone:</strong> {{ patient.phone || '-' }}</p>
-  <p><strong>Email:</strong> {{ patient.email || '-' }}</p>
-
-  <div class="actions">
-    <button class="edit" (click)="goToEdit()">Editar</button>
-    <button class="back" (click)="goBack()">Voltar para a Lista</button>
+    <div class="actions">
+      <button (click)="goToEdit()">Editar</button>
+      <button (click)="goBack()">Voltar</button>
+    </div>
   </div>
 </div>
+
+<ng-template #loadingTemplate>
+  <p>Carregando paciente...</p>
+</ng-template>
+
+<ng-template #noDataTemplate>
+  <p>Paciente não encontrado.</p>
+  <button (click)="goBack()">Voltar</button>
+</ng-template>

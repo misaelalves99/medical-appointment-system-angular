@@ -1,51 +1,55 @@
-<!-- src/app/pages/appointments/appointments-page.component.html -->
+<!-- src/pages/Appointments/appointment-list.component.html -->
 
 <div class="container">
   <h1 class="title">Lista de Consultas</h1>
 
   <div class="actions">
-    <button class="createBtn" [routerLink]="['/appointments/create']">
+    <button class="createBtn" (click)="navigateTo('/appointments/create')">
       Nova Consulta
     </button>
 
     <input
       type="text"
-      placeholder="Pesquisar por data, hora, paciente, médico ou status..."
+      placeholder="Pesquisar por ID, data, hora, paciente ou status..."
       [(ngModel)]="search"
+      (ngModelChange)="updateFilteredAppointments()"
       class="searchInput"
     />
   </div>
 
-  <p *ngIf="loading">Carregando...</p>
-
-  <table class="table" *ngIf="!loading">
+  <table *ngIf="appointments.length > 0" class="table">
     <thead>
       <tr>
+        <th>ID</th>
         <th>Data</th>
         <th>Hora</th>
         <th>Paciente</th>
-        <th>Médico</th>
         <th>Status</th>
         <th>Ações</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let a of filteredAppointments">
-        <td>{{ a.appointmentDate | date: 'dd/MM/yyyy' }}</td>
-        <td>{{ a.appointmentDate | date: 'HH:mm' }}</td>
-        <td>{{ a.patientId ? ('Paciente ID: ' + a.patientId) : '—' }}</td>
-        <td>{{ a.doctorId ? ('Médico ID: ' + a.doctorId) : '—' }}</td>
+        <td>{{ a.id }}</td>
+        <td>{{ (a.appointmentDate | date:'shortDate') }}</td>
+        <td>{{ (a.appointmentDate | date:'shortTime') }}</td>
+        <td>{{ a.patientName || '—' }}</td>
         <td>{{ getStatusLabel(a.status) }}</td>
-        <td>
-          <a class="link" [routerLink]="['/appointments', a.id]">Detalhes</a>
-          <span class="sep">|</span>
-          <a class="link" [routerLink]="['/appointments/edit', a.id]">Editar</a>
-          <span class="sep">|</span>
-          <button class="deleteBtn" (click)="handleDelete(a.id)">
-            Excluir
-          </button>
+        <td class="actionsColumn">
+          <button class="detailsBtn" (click)="navigateTo('/appointments/' + a.id)">Detalhes</button>
+          <button class="editBtn" (click)="navigateTo('/appointments/edit/' + a.id)">Editar</button>
+          <button class="deleteBtn" (click)="navigateTo('/appointments/delete/' + a.id)">Excluir</button>
+        </td>
+      </tr>
+      <tr *ngIf="filteredAppointments.length === 0">
+        <td colspan="6" class="noResults">
+          Nenhuma consulta encontrada.
         </td>
       </tr>
     </tbody>
   </table>
+
+  <p *ngIf="appointments.length === 0" class="noResults">
+    Nenhuma consulta cadastrada.
+  </p>
 </div>
