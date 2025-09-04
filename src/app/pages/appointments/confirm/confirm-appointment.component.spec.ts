@@ -39,10 +39,8 @@ describe('ConfirmAppointmentComponent', () => {
 
   it('should emit confirm event with appointment id', () => {
     spyOn(component.confirm, 'emit');
-
     const event = new Event('submit');
     component.handleConfirm(event);
-
     expect(component.confirm.emit).toHaveBeenCalledWith(mockAppointment.id);
   });
 
@@ -76,5 +74,25 @@ describe('ConfirmAppointmentComponent', () => {
     const button = fixture.debugElement.query(By.css('.backLink'));
     button.nativeElement.click();
     expect(component.handleBack).toHaveBeenCalled();
+  });
+
+  it('should display IDs if patient or doctor name is missing', () => {
+    component.appointment = {
+      id: 2,
+      appointmentDate: '2025-08-22T10:00:00',
+      patientId: 10,
+      doctorId: 20
+    };
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.textContent).toContain('ID 10');
+    expect(compiled.textContent).toContain('ID 20');
+  });
+
+  it('should not render template if appointment is undefined', () => {
+    component.appointment = undefined as any;
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('.confirmContainer')).toBeNull();
   });
 });

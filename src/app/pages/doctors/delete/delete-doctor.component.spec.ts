@@ -7,7 +7,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { of } from 'rxjs';
 import { By } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Doctor } from '../../../types/doctor.model';
 
 describe('DeleteDoctorComponent', () => {
   let component: DeleteDoctorComponent;
@@ -15,7 +15,7 @@ describe('DeleteDoctorComponent', () => {
   let doctorServiceSpy: jasmine.SpyObj<DoctorService>;
   let routerSpy: jasmine.SpyObj<Router>;
 
-  const fakeDoctor = {
+  const fakeDoctor: Doctor = {
     id: 1,
     name: 'Dr. Test',
     crm: '12345',
@@ -28,16 +28,19 @@ describe('DeleteDoctorComponent', () => {
   beforeEach(async () => {
     doctorServiceSpy = jasmine.createSpyObj('DoctorService', ['getById', 'delete']);
     doctorServiceSpy.getById.and.returnValue(of(fakeDoctor));
+
     routerSpy = jasmine.createSpyObj('Router', ['navigate']);
 
     await TestBed.configureTestingModule({
-      imports: [DeleteDoctorComponent, CommonModule, RouterModule],
+      imports: [DeleteDoctorComponent, CommonModule],
       providers: [
         { provide: DoctorService, useValue: doctorServiceSpy },
         { provide: Router, useValue: routerSpy },
         {
           provide: ActivatedRoute,
-          useValue: { snapshot: { paramMap: new Map([['id', '1']]) } },
+          useValue: {
+            snapshot: { paramMap: new Map([['id', '1']]) },
+          },
         },
       ],
     }).compileComponents();
@@ -47,17 +50,17 @@ describe('DeleteDoctorComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should create the component', () => {
     expect(component).toBeTruthy();
   });
 
   it('should load doctor on ngOnInit', () => {
     expect(component.doctor).toEqual(fakeDoctor);
-    const nameEl = fixture.debugElement.query(By.css('dd')).nativeElement;
+    const nameEl = fixture.debugElement.query(By.css('strong')).nativeElement;
     expect(nameEl.textContent).toContain('Dr. Test');
   });
 
-  it('should call delete and navigate on handleDelete when confirmed', () => {
+  it('should call delete and navigate when confirmed', () => {
     spyOn(window, 'confirm').and.returnValue(true);
 
     component.handleDelete();
@@ -66,7 +69,7 @@ describe('DeleteDoctorComponent', () => {
     expect(routerSpy.navigate).toHaveBeenCalledWith(['/doctors']);
   });
 
-  it('should not delete if confirm is canceled', () => {
+  it('should not delete if confirm returns false', () => {
     spyOn(window, 'confirm').and.returnValue(false);
 
     component.handleDelete();
@@ -76,15 +79,23 @@ describe('DeleteDoctorComponent', () => {
   });
 
   it('should navigate on cancel', () => {
-    component.cancel();
+    component.handleCancel();
     expect(routerSpy.navigate).toHaveBeenCalledWith(['/doctors']);
   });
 
-  it('should show loading template if doctor is null', () => {
+  it('should display loading template if doctor is null', () => {
     component.doctor = null;
     fixture.detectChanges();
 
     const loadingEl = fixture.debugElement.query(By.css('p'));
     expect(loadingEl.nativeElement.textContent).toContain('Carregando...');
+  });
+
+  it('should render all buttons', () => {
+    const deleteBtn = fixture.debugElement.query(By.css('.deleteButton')).nativeElement;
+    const cancelBtn = fixture.debugElement.query(By.css('.cancelButton')).nativeElement;
+
+    expect(deleteBtn.textContent).toContain('Excluir');
+    expect(cancelBtn.textContent).toContain('Cancelar');
   });
 });

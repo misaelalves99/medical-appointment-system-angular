@@ -39,45 +39,54 @@ describe('DoctorListComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should create the component', () => {
     expect(component).toBeTruthy();
   });
 
   it('should load doctors on init', () => {
     expect(component.doctors.length).toBe(2);
     expect(component.doctors).toEqual(mockDoctors);
+    expect(component.filteredDoctors.length).toBe(2);
   });
 
-  it('should filter doctors by search term', () => {
+  it('should filter doctors by search term (name, specialty, id)', () => {
     component.search = 'Dr. A';
+    component.updateFilteredDoctors();
     expect(component.filteredDoctors.length).toBe(1);
     expect(component.filteredDoctors[0].name).toBe('Dr. A');
 
     component.search = 'Neuro';
+    component.updateFilteredDoctors();
     expect(component.filteredDoctors.length).toBe(1);
     expect(component.filteredDoctors[0].specialty).toBe('Neuro');
 
+    component.search = '1';
+    component.updateFilteredDoctors();
+    expect(component.filteredDoctors.length).toBe(1);
+    expect(component.filteredDoctors[0].id).toBe(1);
+
     component.search = '9999';
+    component.updateFilteredDoctors();
     expect(component.filteredDoctors.length).toBe(0);
   });
 
-  it('should navigate to create', () => {
-    component.goToCreate();
+  it('should navigate to create doctor page', () => {
+    component.navigateTo('/doctors/create');
     expect(routerSpy.navigate).toHaveBeenCalledWith(['/doctors/create']);
   });
 
-  it('should navigate to details', () => {
-    component.goToDetails(1);
+  it('should navigate to details page', () => {
+    component.navigateTo('/doctors/details/1');
     expect(routerSpy.navigate).toHaveBeenCalledWith(['/doctors/details/1']);
   });
 
-  it('should navigate to edit', () => {
-    component.goToEdit(2);
+  it('should navigate to edit page', () => {
+    component.navigateTo('/doctors/edit/2');
     expect(routerSpy.navigate).toHaveBeenCalledWith(['/doctors/edit/2']);
   });
 
-  it('should navigate to delete', () => {
-    component.goToDelete(1);
+  it('should navigate to delete page', () => {
+    component.navigateTo('/doctors/delete/1');
     expect(routerSpy.navigate).toHaveBeenCalledWith(['/doctors/delete/1']);
   });
 });

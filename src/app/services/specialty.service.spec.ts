@@ -5,7 +5,7 @@ import { SpecialtyService, Specialty } from './specialty.service';
 describe('SpecialtyService', () => {
   let service: SpecialtyService;
 
-  const newSpecialty: Specialty = { id: 3, name: "Neurologia" };
+  const baseSpecialtyName = "Neurologia";
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
@@ -25,43 +25,48 @@ describe('SpecialtyService', () => {
   });
 
   it('should get specialty by id', (done) => {
-    service.getById(1).subscribe((specialty) => {
-      expect(specialty).toBeDefined();
-      expect(specialty!.id).toBe(1);
-      done();
-    });
+    const specialty = service.getSpecialtyById(1);
+    expect(specialty).toBeDefined();
+    expect(specialty!.id).toBe(1);
+    done();
   });
 
   it('should return undefined for non-existing id', (done) => {
-    service.getById(999).subscribe((specialty) => {
-      expect(specialty).toBeUndefined();
-      done();
-    });
+    const specialty = service.getSpecialtyById(999);
+    expect(specialty).toBeUndefined();
+    done();
   });
 
-  it('should add a new specialty', (done) => {
-    service.add(newSpecialty);
+  it('should add a new specialty with auto-generated id', (done) => {
+    service.addSpecialty(baseSpecialtyName);
     service.getSpecialties().subscribe((specialties) => {
-      const added = specialties.find(s => s.id === newSpecialty.id);
+      const added = specialties.find(s => s.name === baseSpecialtyName);
       expect(added).toBeDefined();
-      expect(added!.name).toBe("Neurologia");
+      expect(added!.id).toBeGreaterThan(2); // ID gerado automaticamente
+      expect(added!.name).toBe(baseSpecialtyName);
       done();
     });
   });
 
   it('should update an existing specialty', (done) => {
-    const updatedSpecialty = { ...newSpecialty, name: "Neurocirurgia" };
-    service.update(updatedSpecialty);
-    service.getById(newSpecialty.id).subscribe((specialty) => {
-      expect(specialty!.name).toBe("Neurocirurgia");
+    service.addSpecialty(baseSpecialtyName);
+    service.getSpecialties().subscribe((specialties) => {
+      const added = specialties.find(s => s.name === baseSpecialtyName)!;
+      service.updateSpecialty(added.id!, "Neurocirurgia");
+
+      const updated = service.getSpecialtyById(added.id!);
+      expect(updated!.name).toBe("Neurocirurgia");
       done();
     });
   });
 
   it('should delete a specialty', (done) => {
-    service.delete(newSpecialty.id);
+    service.addSpecialty(baseSpecialtyName);
     service.getSpecialties().subscribe((specialties) => {
-      const deleted = specialties.find(s => s.id === newSpecialty.id);
+      const added = specialties.find(s => s.name === baseSpecialtyName)!;
+      service.deleteSpecialty(added.id!);
+
+      const deleted = service.getSpecialtyById(added.id!);
       expect(deleted).toBeUndefined();
       done();
     });

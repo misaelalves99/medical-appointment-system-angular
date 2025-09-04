@@ -5,8 +5,7 @@ import { DoctorService, Doctor } from './doctor.service';
 describe('DoctorService', () => {
   let service: DoctorService;
 
-  const newDoctor: Doctor = {
-    id: 3,
+  const baseDoctor: Doctor = {
     name: 'Dr. Carlos Mendes',
     crm: '789012',
     specialty: 'Ortopedia',
@@ -47,31 +46,44 @@ describe('DoctorService', () => {
     });
   });
 
-  it('should add a new doctor', (done) => {
-    service.add(newDoctor);
+  it('should add a new doctor with auto-generated id', (done) => {
+    service.add(baseDoctor);
     service.getDoctors().subscribe((doctors) => {
-      const added = doctors.find(d => d.id === newDoctor.id);
+      const added = doctors.find(d => d.email === baseDoctor.email);
       expect(added).toBeDefined();
+      expect(added!.id).toBeGreaterThan(2); // deve ser 3 em diante
       expect(added!.name).toBe('Dr. Carlos Mendes');
       done();
     });
   });
 
   it('should update an existing doctor', (done) => {
-    const updatedDoctor = { ...newDoctor, specialty: 'Pediatria' };
-    service.update(updatedDoctor);
-    service.getById(newDoctor.id).subscribe((doctor) => {
-      expect(doctor!.specialty).toBe('Pediatria');
-      done();
+    // adiciona primeiro para garantir que existe
+    service.add(baseDoctor);
+    service.getDoctors().subscribe((doctors) => {
+      const added = doctors.find(d => d.email === baseDoctor.email)!;
+      const updatedDoctor = { ...added, specialty: 'Pediatria' };
+      service.update(updatedDoctor);
+
+      service.getById(added.id!).subscribe((doctor) => {
+        expect(doctor!.specialty).toBe('Pediatria');
+        done();
+      });
     });
   });
 
   it('should delete a doctor', (done) => {
-    service.delete(newDoctor.id);
+    // adiciona e depois deleta
+    service.add(baseDoctor);
     service.getDoctors().subscribe((doctors) => {
-      const deleted = doctors.find(d => d.id === newDoctor.id);
-      expect(deleted).toBeUndefined();
-      done();
+      const added = doctors.find(d => d.email === baseDoctor.email)!;
+      service.delete(added.id!);
+
+      service.getDoctors().subscribe((newDoctors) => {
+        const deleted = newDoctors.find(d => d.id === added.id);
+        expect(deleted).toBeUndefined();
+        done();
+      });
     });
   });
 });

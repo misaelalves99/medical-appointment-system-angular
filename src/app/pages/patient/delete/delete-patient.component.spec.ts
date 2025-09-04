@@ -6,14 +6,14 @@ import { PatientService, Patient } from '../../../services/patient.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { of } from 'rxjs';
 import { By } from '@angular/platform-browser';
+import { CommonModule } from '@angular/common';
 
 describe('DeletePatientComponent', () => {
   let component: DeletePatientComponent;
   let fixture: ComponentFixture<DeletePatientComponent>;
-  let mockPatientService: any;
-  let mockRouter: any;
+  let patientServiceSpy: jasmine.SpyObj<PatientService>;
+  let routerSpy: jasmine.SpyObj<Router>;
 
-  // ⚡ Mock completo compatível com Patient
   const patientMock: Patient = {
     id: 1,
     name: 'João Silva',
@@ -22,30 +22,26 @@ describe('DeletePatientComponent', () => {
     email: 'joao@email.com',
     phone: '999999999',
     address: 'Rua Teste, 123',
-    gender: 'Masculino'
+    gender: 'Masculino',
   };
 
   beforeEach(async () => {
-    mockPatientService = {
-      getById: jasmine.createSpy('getById').and.returnValue(of(patientMock)),
-      delete: jasmine.createSpy('delete')
-    };
+    patientServiceSpy = jasmine.createSpyObj('PatientService', ['getById', 'delete']);
+    patientServiceSpy.getById.and.returnValue(of(patientMock));
 
-    mockRouter = {
-      navigate: jasmine.createSpy('navigate')
-    };
+    routerSpy = jasmine.createSpyObj('Router', ['navigate']);
 
     const mockActivatedRoute = {
       snapshot: { paramMap: { get: () => '1' } }
     };
 
     await TestBed.configureTestingModule({
-      imports: [DeletePatientComponent],
+      imports: [DeletePatientComponent, CommonModule],
       providers: [
-        { provide: PatientService, useValue: mockPatientService },
-        { provide: Router, useValue: mockRouter },
-        { provide: ActivatedRoute, useValue: mockActivatedRoute }
-      ]
+        { provide: PatientService, useValue: patientServiceSpy },
+        { provide: Router, useValue: routerSpy },
+        { provide: ActivatedRoute, useValue: mockActivatedRoute },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(DeletePatientComponent);
@@ -58,33 +54,42 @@ describe('DeletePatientComponent', () => {
   });
 
   it('should load patient on init', () => {
-    expect(mockPatientService.getById).toHaveBeenCalledWith(1);
+    expect(patientServiceSpy.getById).toHaveBeenCalledWith(1);
     expect(component.patient).toEqual(patientMock);
 
-    const nameEl = fixture.debugElement.query(By.css('strong')).nativeElement;
-    expect(nameEl.textContent).toContain('João Silva');
+    const strongEl = fixture.debugElement.query(By.css('strong')).nativeElement;
+    expect(strongEl.textContent).toContain('João Silva');
   });
 
-  it('should navigate to /patient when cancel is clicked', () => {
+  it('should navigate to /patient when handleCancel is called', () => {
     component.handleCancel();
-    expect(mockRouter.navigate).toHaveBeenCalledWith(['/patient']);
+    expect(routerSpy.navigate).toHaveBeenCalledWith(['/patient']);
   });
 
-  it('should call delete and navigate if confirm is true', () => {
+  it('should delete patient and navigate if confirmed', () => {
     spyOn(window, 'confirm').and.returnValue(true);
 
-    component.handleSubmit();
+    component.handleDelete();
 
-    expect(mockPatientService.delete).toHaveBeenCalledWith(1);
-    expect(mockRouter.navigate).toHaveBeenCalledWith(['/patient']);
+    expect(patientServiceSpy.delete).toHaveBeenCalledWith(1);
+    expect(routerSpy.navigate).toHaveBeenCalledWith(['/patient']);
   });
 
-  it('should not call delete or navigate if confirm is false', () => {
+  it('should not delete or navigate if deletion is canceled', () => {
     spyOn(window, 'confirm').and.returnValue(false);
 
-    component.handleSubmit();
+    component.patient = patientMock;
+    component.handleDelete();
 
-    expect(mockPatientService.delete).not.toHaveBeenCalled();
-    expect(mockRouter.navigate).not.toHaveBeenCalled();
+    expect(patientServiceSpy.delete).not.toHaveBeenCalled();
+    expect(routerSpy.navigate).not.toHaveBeenCalled();
+  });
+
+  it('should show loading template if patient is null', () => {
+    component.patient = null;
+    fixture.detectChanges();
+
+    const loadingEl = fixture.debugElement.query(By.css('p'));
+    expect(loadingEl.nativeElement.textContent).toContain('Carregando...');
   });
 });

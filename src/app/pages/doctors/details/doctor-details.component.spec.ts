@@ -1,7 +1,6 @@
-// src/pages/Doctors/Details/doctor-details.component.spec.ts
-
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { DoctorDetailsComponent, Doctor } from './doctor-details.component';
+import { DoctorDetailsComponent } from './doctor-details.component';
+import { Doctor } from '../../../types/doctor.model'; // <-- import centralizado
 import { Router } from '@angular/router';
 import { By } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
@@ -35,11 +34,11 @@ describe('DoctorDetailsComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should create the component', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render doctor details', () => {
+  it('should render all doctor details correctly', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('p:nth-of-type(1)')?.textContent).toContain(mockDoctor.name);
     expect(compiled.querySelector('p:nth-of-type(2)')?.textContent).toContain(mockDoctor.crm);
@@ -49,7 +48,7 @@ describe('DoctorDetailsComponent', () => {
     expect(compiled.querySelector('p:nth-of-type(6)')?.textContent).toContain('Sim');
   });
 
-  it('should navigate to edit when Edit button is clicked', () => {
+  it('should navigate to edit page when Edit button is clicked', () => {
     const editBtn = fixture.debugElement.query(By.css('button.edit'));
     editBtn.triggerEventHandler('click', null);
     expect(routerSpy.navigate).toHaveBeenCalledWith([`/doctors/edit/${mockDoctor.id}`]);
@@ -62,9 +61,15 @@ describe('DoctorDetailsComponent', () => {
   });
 
   it('should not render content if doctor is undefined', () => {
-    component.doctor = undefined!;
+    component.doctor = undefined;
     fixture.detectChanges();
     const container = fixture.debugElement.query(By.css('.container'));
     expect(container).toBeNull();
+  });
+
+  it('should render loading template if doctor is undefined', () => {
+    component.doctor = undefined;
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('Carregando detalhes...');
   });
 });

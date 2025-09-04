@@ -19,12 +19,14 @@ export class AppointmentListComponent {
   filteredAppointments: Appointment[] = [];
 
   constructor(private router: Router, private appointmentService: AppointmentService) {
+    // Subscribing to the service's appointments observable
     this.appointmentService.appointments$.subscribe(a => {
       this.appointments = a;
       this.updateFilteredAppointments();
     });
   }
 
+  // Update filtered appointments based on search
   updateFilteredAppointments() {
     const searchLower = this.search.toLowerCase();
     this.filteredAppointments = this.appointments.filter(a => {
@@ -44,6 +46,7 @@ export class AppointmentListComponent {
     });
   }
 
+  // Map enum to human-readable label
   getStatusLabel(status: AppointmentStatus): string {
     switch(status) {
       case AppointmentStatus.Pending: return 'Pendente';
@@ -54,7 +57,16 @@ export class AppointmentListComponent {
     }
   }
 
+  // Navigate to a given path
   navigateTo(path: string) {
     this.router.navigate([path]);
+  }
+
+  // Delete an appointment after confirmation
+  deleteAppointment(id: number) {
+    const confirmed = window.confirm('Tem certeza que deseja excluir este agendamento?');
+    if (confirmed) {
+      this.appointmentService.delete(id);
+    }
   }
 }

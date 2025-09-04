@@ -10,7 +10,7 @@ import { CommonModule } from '@angular/common'; // necessário para *ngIf, *ngFo
   templateUrl: './details-patient.component.html',
   styleUrls: ['./details-patient.component.css'],
   standalone: true,
-  imports: [CommonModule] // 🔹 IMPORTANTE
+  imports: [CommonModule]
 })
 export class DetailsPatientComponent implements OnInit {
   patient?: Patient;

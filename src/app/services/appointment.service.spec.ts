@@ -1,14 +1,13 @@
 // src/app/services/appointment.service.spec.ts
 
 import { TestBed } from '@angular/core/testing';
-import { AppointmentService } from './appointment.service';
-import { Appointment, AppointmentStatus } from '../types/appointment.model';
+import { AppointmentService, Appointment, AppointmentStatus } from './appointment.service';
 
 describe('AppointmentService', () => {
   let service: AppointmentService;
 
   const mockAppointment: Appointment = {
-    id: 2,
+    id: 999, // será sobrescrito pelo service.add
     patientId: 3,
     patientName: 'Maria Souza',
     doctorId: 4,
@@ -50,31 +49,48 @@ describe('AppointmentService', () => {
     });
   });
 
-  it('should add a new appointment', (done) => {
+  it('should add a new appointment and assign a new id', (done) => {
     service.add(mockAppointment);
     service.getAppointments().subscribe((appointments) => {
-      const added = appointments.find(a => a.id === mockAppointment.id);
+      const added = appointments.find(a => a.patientName === 'Maria Souza');
       expect(added).toBeDefined();
+      expect(added!.id).not.toBe(999); // id deve ser sobrescrito
       expect(added!.patientName).toBe('Maria Souza');
       done();
     });
   });
 
   it('should update an existing appointment', (done) => {
-    const updated = { ...mockAppointment, notes: 'Consulta reagendada.' };
-    service.update(updated);
-    service.getById(mockAppointment.id).subscribe((appointment) => {
-      expect(appointment!.notes).toBe('Consulta reagendada.');
-      done();
+    // Primeiro adiciona
+    service.add(mockAppointment);
+    service.getAppointments().subscribe((appointments) => {
+      const added = appointments.find(a => a.patientName === 'Maria Souza');
+      expect(added).toBeDefined();
+
+      const updated = { ...added!, notes: 'Consulta reagendada.' };
+      service.update(updated);
+
+      service.getById(updated.id).subscribe((appointment) => {
+        expect(appointment!.notes).toBe('Consulta reagendada.');
+        done();
+      });
     });
   });
 
   it('should delete an appointment', (done) => {
-    service.delete(mockAppointment.id);
+    // Primeiro adiciona
+    service.add(mockAppointment);
     service.getAppointments().subscribe((appointments) => {
-      const deleted = appointments.find(a => a.id === mockAppointment.id);
-      expect(deleted).toBeUndefined();
-      done();
+      const added = appointments.find(a => a.patientName === 'Maria Souza');
+      expect(added).toBeDefined();
+
+      service.delete(added!.id);
+
+      service.getAppointments().subscribe((afterDelete) => {
+        const deleted = afterDelete.find(a => a.id === added!.id);
+        expect(deleted).toBeUndefined();
+        done();
+      });
     });
   });
 });

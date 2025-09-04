@@ -5,7 +5,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
 export interface PatientHistoryItem {
-  recordDate: string; // ISO string
+  recordDate: string;
   description: string;
   notes?: string | null;
 }
