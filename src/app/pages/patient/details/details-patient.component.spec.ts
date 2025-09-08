@@ -6,6 +6,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { PatientService, Patient } from '../../../services/patient.service';
 import { of } from 'rxjs';
 import { By } from '@angular/platform-browser';
+import { CommonModule } from '@angular/common';
 
 describe('DetailsPatientComponent', () => {
   let component: DetailsPatientComponent;
@@ -28,15 +29,16 @@ describe('DetailsPatientComponent', () => {
     mockRouter = jasmine.createSpyObj('Router', ['navigate']);
     mockPatientService = jasmine.createSpyObj('PatientService', ['getById']);
 
+    const mockActivatedRoute = {
+      snapshot: { paramMap: { get: () => '1' } },
+    };
+
     await TestBed.configureTestingModule({
-      imports: [DetailsPatientComponent],
+      imports: [DetailsPatientComponent, CommonModule],
       providers: [
         { provide: Router, useValue: mockRouter },
         { provide: PatientService, useValue: mockPatientService },
-        {
-          provide: ActivatedRoute,
-          useValue: { snapshot: { paramMap: { get: () => '1' } } },
-        },
+        { provide: ActivatedRoute, useValue: mockActivatedRoute },
       ],
     }).compileComponents();
 

@@ -1,5 +1,4 @@
-// src/pages/Doctors/Create/create-doctor.component.spec.ts
-
+// src/app/pages/doctors/create/create-doctor.component.spec.ts
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CreateDoctorComponent } from './create-doctor.component';
 import { Router } from '@angular/router';
@@ -7,13 +6,15 @@ import { By } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { of } from 'rxjs';
+import { DoctorService } from '../../../services/doctor.service';
+import { SpecialtyService } from '../../../services/specialty.service';
 
 describe('CreateDoctorComponent', () => {
   let component: CreateDoctorComponent;
   let fixture: ComponentFixture<CreateDoctorComponent>;
   let routerSpy: jasmine.SpyObj<Router>;
-  let mockDoctorService: any;
-  let mockSpecialtyService: any;
+  let mockDoctorService: jasmine.SpyObj<DoctorService>;
+  let mockSpecialtyService: jasmine.SpyObj<SpecialtyService>;
 
   const specialtiesMock = [
     { name: 'Cardiologia' },
@@ -22,15 +23,16 @@ describe('CreateDoctorComponent', () => {
 
   beforeEach(async () => {
     routerSpy = jasmine.createSpyObj('Router', ['navigate']);
-    mockDoctorService = { add: jasmine.createSpy('add') };
-    mockSpecialtyService = { getSpecialties: jasmine.createSpy('getSpecialties').and.returnValue(of(specialtiesMock)) };
+    mockDoctorService = jasmine.createSpyObj('DoctorService', ['add']);
+    mockSpecialtyService = jasmine.createSpyObj('SpecialtyService', ['getSpecialties']);
+    mockSpecialtyService.getSpecialties.and.returnValue(of(specialtiesMock));
 
     await TestBed.configureTestingModule({
       imports: [CreateDoctorComponent, CommonModule, FormsModule],
       providers: [
         { provide: Router, useValue: routerSpy },
-        { provide: 'DoctorService', useValue: mockDoctorService },
-        { provide: 'SpecialtyService', useValue: mockSpecialtyService },
+        { provide: DoctorService, useValue: mockDoctorService },
+        { provide: SpecialtyService, useValue: mockSpecialtyService },
       ],
     }).compileComponents();
 
@@ -39,16 +41,16 @@ describe('CreateDoctorComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create the component', () => {
+  it('should create the component and load specialties', () => {
     expect(component).toBeTruthy();
     expect(component.specialties.length).toBe(2);
   });
 
   it('should update formData when inputs change', () => {
-    const input = { target: { name: 'name', value: 'Dr. Test' } } as any;
-    component.formData.name = '';
-    component.handleSubmit = jasmine.createSpy(); // evita submissão real
-    component.formData.name = input.target.value;
+    const nameInput = fixture.debugElement.query(By.css('input[name="name"]')).nativeElement;
+    nameInput.value = 'Dr. Test';
+    nameInput.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
     expect(component.formData.name).toBe('Dr. Test');
   });
 
@@ -62,10 +64,11 @@ describe('CreateDoctorComponent', () => {
       phone: '999999999',
       isActive: true,
     };
+
     component.handleSubmit(form);
     expect(mockDoctorService.add).toHaveBeenCalledWith(jasmine.objectContaining({
       name: 'Dr. Test',
-      crm: '12345'
+      crm: '12345',
     }));
     expect(routerSpy.navigate).toHaveBeenCalledWith(['/doctors']);
   });
@@ -106,5 +109,13 @@ describe('CreateDoctorComponent', () => {
     expect(options.length).toBe(3); // 1 default + 2 mock
     expect(options[1].nativeElement.textContent).toBe('Cardiologia');
     expect(options[2].nativeElement.textContent).toBe('Dermatologia');
+  });
+
+  it('should update isActive when checkbox is clicked', () => {
+    const checkbox = fixture.debugElement.query(By.css('input[type="checkbox"]')).nativeElement;
+    checkbox.checked = true;
+    checkbox.dispatchEvent(new Event('change'));
+    fixture.detectChanges();
+    expect(component.formData.isActive).toBeTrue();
   });
 });

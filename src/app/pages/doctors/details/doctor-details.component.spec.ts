@@ -1,6 +1,7 @@
+// src/app/pages/doctors/details/doctor-details.component.spec.ts
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { DoctorDetailsComponent } from './doctor-details.component';
-import { Doctor } from '../../../types/doctor.model'; // <-- import centralizado
+import { Doctor } from '../../../types/doctor.model';
 import { Router } from '@angular/router';
 import { By } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';

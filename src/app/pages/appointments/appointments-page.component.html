@@ -36,7 +36,7 @@
         <td>{{ a.patientName || '—' }}</td>
         <td>{{ getStatusLabel(a.status) }}</td>
         <td class="actionsColumn">
-          <button class="detailsBtn" (click)="navigateTo('/appointments/' + a.id)">Detalhes</button>
+          <button class="detailsBtn" (click)="navigateTo('/appointments/details/' + a.id)">Detalhes</button>
           <button class="editBtn" (click)="navigateTo('/appointments/edit/' + a.id)">Editar</button>
           <button class="deleteBtn" (click)="navigateTo('/appointments/delete/' + a.id)">Excluir</button>
         </td>

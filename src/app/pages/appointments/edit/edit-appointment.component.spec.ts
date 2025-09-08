@@ -1,4 +1,4 @@
-// src/pages/Appointments/Edit/edit-appointment.component.spec.ts
+// src/pages/appointments/edit/edit-appointment.component.spec.ts
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { EditAppointmentComponent } from './edit-appointment.component';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -34,6 +34,8 @@ describe('EditAppointmentComponent', () => {
     appointmentDate: '2025-08-21T10:30',
     status: AppointmentStatus.Confirmed,
     notes: 'Observação teste',
+    patientName: 'Alice',
+    doctorName: 'Dr. John'
   };
 
   beforeEach(async () => {
@@ -79,12 +81,17 @@ describe('EditAppointmentComponent', () => {
     const formSpy = { invalid: false } as any;
     component.formData.notes = 'Atualizado';
     component.handleSubmit(formSpy);
+
     expect(appointmentServiceSpy.update).toHaveBeenCalledWith(jasmine.objectContaining({
       id: 100,
       notes: 'Atualizado',
       patientId: 1,
-      doctorId: 10
+      doctorId: 10,
+      patientName: 'Alice',
+      doctorName: 'Dr. John',
+      status: AppointmentStatus.Confirmed
     }));
+
     expect(routerSpy.navigate).toHaveBeenCalledWith(['/appointments']);
   });
 

@@ -1,17 +1,18 @@
 // src/app/pages/appointments/appointments-page.component.spec.ts
-
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AppointmentListComponent } from './appointments-page.component';
 import { AppointmentService, Appointment, AppointmentStatus } from '../../services/appointment.service';
 import { Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 import { FormsModule } from '@angular/forms';
+import { By } from '@angular/platform-browser';
 
 describe('AppointmentListComponent', () => {
   let component: AppointmentListComponent;
   let fixture: ComponentFixture<AppointmentListComponent>;
   let routerSpy: jasmine.SpyObj<Router>;
   let appointmentServiceSpy: jasmine.SpyObj<AppointmentService>;
+  let appointmentsSubject: BehaviorSubject<Appointment[]>;
 
   const mockAppointments: Appointment[] = [
     { id: 1, patientId: 101, doctorId: 201, appointmentDate: '2025-08-21T10:00', status: AppointmentStatus.Scheduled, patientName: 'Alice' },
@@ -20,7 +21,7 @@ describe('AppointmentListComponent', () => {
 
   beforeEach(async () => {
     routerSpy = jasmine.createSpyObj('Router', ['navigate']);
-    const appointmentsSubject = new BehaviorSubject<Appointment[]>(mockAppointments);
+    appointmentsSubject = new BehaviorSubject<Appointment[]>(mockAppointments);
     appointmentServiceSpy = jasmine.createSpyObj('AppointmentService', ['delete'], { appointments$: appointmentsSubject.asObservable() });
 
     await TestBed.configureTestingModule({
@@ -57,14 +58,23 @@ describe('AppointmentListComponent', () => {
   });
 
   it('should filter appointments by date', () => {
-    const dateStr = new Date('2025-08-21T12:00').toLocaleDateString();
+    const dateStr = new Date('2025-08-21T10:00').toLocaleDateString();
     component.search = dateStr;
     component.updateFilteredAppointments();
     expect(component.filteredAppointments.length).toBe(2);
   });
 
+  it('should filter appointments by time', () => {
+    const timeStr = new Date('2025-08-21T12:00').toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    component.search = timeStr;
+    component.updateFilteredAppointments();
+    expect(component.filteredAppointments.length).toBe(1);
+    expect(component.filteredAppointments[0].id).toBe(2);
+  });
+
   it('should return correct status label', () => {
     expect(component.getStatusLabel(AppointmentStatus.Pending)).toBe('Pendente');
+    expect(component.getStatusLabel(AppointmentStatus.Scheduled)).toBe('Agendada');
     expect(component.getStatusLabel(AppointmentStatus.Confirmed)).toBe('Confirmada');
     expect(component.getStatusLabel(AppointmentStatus.Cancelled)).toBe('Cancelada');
     expect(component.getStatusLabel(AppointmentStatus.Completed)).toBe('Concluída');
@@ -98,5 +108,26 @@ describe('AppointmentListComponent', () => {
 
     const buttons = compiled.querySelectorAll('button');
     expect(buttons.length).toBeGreaterThan(0);
+  });
+
+  it('should show noResults row if filteredAppointments is empty', () => {
+    component.search = 'nomatch';
+    component.updateFilteredAppointments();
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    const noResultsRow = compiled.querySelector('tbody tr .noResults');
+    expect(noResultsRow).toBeTruthy();
+    expect(noResultsRow?.textContent).toContain('Nenhuma consulta encontrada.');
+  });
+
+  it('should show no appointments message if appointments array is empty', () => {
+    appointmentsSubject.next([]);
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    const noAppointments = compiled.querySelector('.noResults');
+    expect(noAppointments).toBeTruthy();
+    expect(noAppointments?.textContent).toContain('Nenhuma consulta cadastrada.');
   });
 });

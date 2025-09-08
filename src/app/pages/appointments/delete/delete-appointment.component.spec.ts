@@ -1,10 +1,11 @@
-// src/pages/appointments/delete/delete-appointment.component.spec.ts
+// src/app/pages/appointments/delete/delete-appointment.component.spec.ts
 
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { DeleteAppointmentComponent } from './delete-appointment.component';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AppointmentService, Appointment, AppointmentStatus } from '../../../services/appointment.service';
 import { of } from 'rxjs';
+import { By } from '@angular/platform-browser';
 
 describe('DeleteAppointmentComponent', () => {
   let component: DeleteAppointmentComponent;
@@ -12,7 +13,6 @@ describe('DeleteAppointmentComponent', () => {
   let appointmentServiceSpy: jasmine.SpyObj<AppointmentService>;
   let routerSpy: jasmine.SpyObj<Router>;
 
-  // mock de appointment com AppointmentStatus correto
   const mockAppointment: Appointment = {
     id: 1,
     patientId: 101,
@@ -24,12 +24,12 @@ describe('DeleteAppointmentComponent', () => {
     notes: 'Observação teste'
   };
 
-  beforeEach(async () => {
+  function setupTestBed(routeId: string | null, appointments: Appointment[] = [mockAppointment]) {
     appointmentServiceSpy = jasmine.createSpyObj('AppointmentService', ['getAppointments', 'delete']);
-    appointmentServiceSpy.getAppointments.and.returnValue(of([mockAppointment]));
+    appointmentServiceSpy.getAppointments.and.returnValue(of(appointments));
     routerSpy = jasmine.createSpyObj('Router', ['navigate']);
 
-    await TestBed.configureTestingModule({
+    TestBed.configureTestingModule({
       imports: [DeleteAppointmentComponent],
       providers: [
         { provide: AppointmentService, useValue: appointmentServiceSpy },
@@ -37,7 +37,7 @@ describe('DeleteAppointmentComponent', () => {
         {
           provide: ActivatedRoute,
           useValue: {
-            snapshot: { paramMap: { get: () => '1' } },
+            snapshot: { paramMap: { get: () => routeId } },
           },
         },
       ],
@@ -46,48 +46,76 @@ describe('DeleteAppointmentComponent', () => {
     fixture = TestBed.createComponent(DeleteAppointmentComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
+  }
+
+  describe('default case with valid appointment', () => {
+    beforeEach(() => setupTestBed('1'));
+
+    it('should create', () => {
+      expect(component).toBeTruthy();
+    });
+
+    it('should load appointment on ngOnInit', () => {
+      expect(component.appointment).toEqual(mockAppointment);
+    });
+
+    it('should format date and time correctly', () => {
+      expect(component.formattedDate).toBe(new Date(mockAppointment.appointmentDate).toLocaleDateString());
+      expect(component.formattedTime).toBe(
+        new Date(mockAppointment.appointmentDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      );
+    });
+
+    it('should delete appointment and navigate when handleDelete is called', () => {
+      component.handleDelete();
+      expect(appointmentServiceSpy.delete).toHaveBeenCalledWith(mockAppointment.id);
+      expect(routerSpy.navigate).toHaveBeenCalledWith(['/appointments']);
+    });
+
+    it('should navigate on handleCancel', () => {
+      component.handleCancel();
+      expect(routerSpy.navigate).toHaveBeenCalledWith(['/appointments']);
+    });
+
+    it('should render appointment details in template', () => {
+      const compiled = fixture.nativeElement as HTMLElement;
+      expect(compiled.textContent).toContain('Alice');
+      expect(compiled.textContent).toContain('Dr. John');
+      expect(compiled.textContent).toContain(component.formattedDate);
+      expect(compiled.textContent).toContain(component.formattedTime);
+    });
+
+    it('should call handleDelete when form is submitted', () => {
+      spyOn(component, 'handleDelete');
+      const form = fixture.debugElement.query(By.css('form'));
+      form.triggerEventHandler('ngSubmit', {});
+      expect(component.handleDelete).toHaveBeenCalled();
+    });
+
+    it('should call handleCancel when cancel button is clicked', () => {
+      spyOn(component, 'handleCancel');
+      const cancelButton = fixture.debugElement.query(By.css('button.cancelButton'));
+      cancelButton.nativeElement.click();
+      expect(component.handleCancel).toHaveBeenCalled();
+    });
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+  describe('edge cases', () => {
+    it('should redirect if id param is null', () => {
+      setupTestBed(null);
+      expect(routerSpy.navigate).toHaveBeenCalledWith(['/appointments']);
+    });
 
-  it('should load appointment on ngOnInit', () => {
-    expect(component.appointment).toEqual(mockAppointment);
-  });
+    it('should redirect if appointment not found', () => {
+      setupTestBed('99', []); // id válido mas lista vazia
+      expect(component.appointment).toBeNull();
+      expect(routerSpy.navigate).toHaveBeenCalledWith(['/appointments']);
+    });
 
-  it('should format date and time correctly', () => {
-    const formattedDate = component.formattedDate;
-    const formattedTime = component.formattedTime;
-    expect(formattedDate).toBe(new Date(mockAppointment.appointmentDate).toLocaleDateString());
-    expect(formattedTime).toBe(
-      new Date(mockAppointment.appointmentDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    );
-  });
-
-  it('should delete appointment and navigate when handleDelete is called', () => {
-    component.handleDelete();
-    expect(appointmentServiceSpy.delete).toHaveBeenCalledWith(mockAppointment.id);
-    expect(routerSpy.navigate).toHaveBeenCalledWith(['/appointments']);
-  });
-
-  it('should navigate on handleCancel', () => {
-    component.handleCancel();
-    expect(routerSpy.navigate).toHaveBeenCalledWith(['/appointments']);
-  });
-
-  it('should render appointment details in template', () => {
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.textContent).toContain('Alice');
-    expect(compiled.textContent).toContain('Dr. John');
-    expect(compiled.textContent).toContain(component.formattedDate);
-    expect(compiled.textContent).toContain(component.formattedTime);
-  });
-
-  it('should display "not found" template if appointment is null', () => {
-    component.appointment = null;
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.textContent).toContain('Agendamento não encontrado');
+    it('should display "not found" template if appointment is null', () => {
+      setupTestBed('99', []);
+      const compiled = fixture.nativeElement as HTMLElement;
+      expect(compiled.textContent).toContain('Agendamento não encontrado');
+    });
   });
 });

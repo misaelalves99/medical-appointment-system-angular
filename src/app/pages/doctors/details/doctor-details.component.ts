@@ -21,19 +21,20 @@ export class DoctorDetailsComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
+    const idParam = this.route.snapshot.paramMap.get('id');
+    const id = idParam ? Number(idParam) : undefined;
+
     if (!id) {
       this.router.navigate(['/doctors']);
       return;
     }
 
-    this.doctorService.getById(id).subscribe(doc => {
-      if (!doc) {
-        this.router.navigate(['/doctors']);
-      } else {
-        this.doctor = doc;
-      }
-    });
+    const found = this.doctorService.getById(id);
+    if (!found) {
+      this.router.navigate(['/doctors']);
+    } else {
+      this.doctor = found;
+    }
   }
 
   onEdit() {

@@ -2,7 +2,7 @@
 
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CreateSpecialtyComponent } from './create-specialty.component';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { SpecialtyService } from '../../../services/specialty.service';
 import { By } from '@angular/platform-browser';
@@ -14,7 +14,7 @@ describe('CreateSpecialtyComponent', () => {
   let routerSpy: jasmine.SpyObj<Router>;
 
   beforeEach(async () => {
-    specialtyServiceSpy = jasmine.createSpyObj('SpecialtyService', ['addSpecialty']);
+    specialtyServiceSpy = jasmine.createSpyObj('SpecialtyService', ['add']);
     routerSpy = jasmine.createSpyObj('Router', ['navigate']);
 
     await TestBed.configureTestingModule({
@@ -34,36 +34,36 @@ describe('CreateSpecialtyComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should call addSpecialty and navigate on valid submit', () => {
+  it('should call add and navigate on valid submit', () => {
     component.name = '  Cardiology  ';
-    const form = { invalid: false } as any;
+    const form = { invalid: false } as NgForm;
 
     component.handleSubmit(form);
 
-    expect(specialtyServiceSpy.addSpecialty).toHaveBeenCalledWith('Cardiology');
+    expect(specialtyServiceSpy.add).toHaveBeenCalledWith({ name: 'Cardiology' });
     expect(component.name).toBe('');
     expect(routerSpy.navigate).toHaveBeenCalledWith(['/specialty']);
   });
 
-  it('should not call addSpecialty if form is invalid', () => {
-    const form = { invalid: true } as any;
+  it('should not call add if form is invalid', () => {
+    const form = { invalid: true } as NgForm;
 
     component.handleSubmit(form);
 
-    expect(specialtyServiceSpy.addSpecialty).not.toHaveBeenCalled();
+    expect(specialtyServiceSpy.add).not.toHaveBeenCalled();
     expect(routerSpy.navigate).not.toHaveBeenCalled();
   });
 
-  it('should not call addSpecialty if name is empty or whitespace', () => {
-    const form = { invalid: false } as any;
+  it('should not call add if name is empty or whitespace', () => {
+    const form = { invalid: false } as NgForm;
 
     component.name = '   ';
     component.handleSubmit(form);
-    expect(specialtyServiceSpy.addSpecialty).not.toHaveBeenCalled();
+    expect(specialtyServiceSpy.add).not.toHaveBeenCalled();
 
     component.name = '';
     component.handleSubmit(form);
-    expect(specialtyServiceSpy.addSpecialty).not.toHaveBeenCalled();
+    expect(specialtyServiceSpy.add).not.toHaveBeenCalled();
   });
 
   it('should update name when input value changes (two-way binding)', () => {
@@ -78,6 +78,19 @@ describe('CreateSpecialtyComponent', () => {
 
   it('should navigate back on cancel', () => {
     component.handleCancel();
+    expect(routerSpy.navigate).toHaveBeenCalledWith(['/specialty']);
+  });
+
+  it('should trigger handleSubmit on form submit', () => {
+    spyOn(component, 'handleSubmit');
+    const formEl = fixture.debugElement.query(By.css('form'));
+    formEl.triggerEventHandler('ngSubmit', {});
+    expect(component.handleSubmit).toHaveBeenCalled();
+  });
+
+  it('should trigger handleCancel on back button click', () => {
+    const backBtn = fixture.debugElement.query(By.css('button.back'));
+    backBtn.nativeElement.click();
     expect(routerSpy.navigate).toHaveBeenCalledWith(['/specialty']);
   });
 });

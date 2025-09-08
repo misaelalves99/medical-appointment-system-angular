@@ -32,7 +32,7 @@ describe('DeletePatientComponent', () => {
     routerSpy = jasmine.createSpyObj('Router', ['navigate']);
 
     const mockActivatedRoute = {
-      snapshot: { paramMap: { get: () => '1' } }
+      snapshot: { paramMap: { get: () => '1' } },
     };
 
     await TestBed.configureTestingModule({
@@ -61,12 +61,12 @@ describe('DeletePatientComponent', () => {
     expect(strongEl.textContent).toContain('João Silva');
   });
 
-  it('should navigate to /patient when handleCancel is called', () => {
+  it('should navigate to /patient on handleCancel', () => {
     component.handleCancel();
     expect(routerSpy.navigate).toHaveBeenCalledWith(['/patient']);
   });
 
-  it('should delete patient and navigate if confirmed', () => {
+  it('should delete patient and navigate if deletion is confirmed', () => {
     spyOn(window, 'confirm').and.returnValue(true);
 
     component.handleDelete();

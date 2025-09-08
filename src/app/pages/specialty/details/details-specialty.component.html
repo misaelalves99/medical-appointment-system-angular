@@ -1,13 +1,17 @@
 <!-- src/pages/specialty/details/details-specialty.component.html -->
 
-<div class="specialtyDetailsContainer">
+<div class="specialtyDetailsContainer" *ngIf="specialty; else notFound">
   <h1>Detalhes da Especialidade</h1>
 
-  <p><strong>ID:</strong> {{ id }}</p>
-  <p><strong>Nome:</strong> {{ name }}</p>
+  <p><strong>ID:</strong> {{ specialty.id }}</p>
+  <p><strong>Nome:</strong> {{ specialty.name }}</p>
 
   <div class="actions">
-    <a [routerLink]="['/specialty/edit', id]" class="edit">Editar</a>
+    <a [routerLink]="['/specialty/edit', specialty.id]" class="edit">Editar</a>
     <a routerLink="/specialty" class="back">Voltar para a Lista</a>
   </div>
 </div>
+
+<ng-template #notFound>
+  <p>Especialidade não encontrada.</p>
+</ng-template>

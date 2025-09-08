@@ -16,7 +16,6 @@ describe('CreateAppointmentComponent', () => {
   let routerSpy: jasmine.SpyObj<Router>;
   let appointmentServiceSpy: jasmine.SpyObj<AppointmentService>;
 
-  // mocks completos
   const mockPatients: Patient[] = [
     { id: 1, name: 'Alice', cpf: '000.000.000-00', dateOfBirth: '1990-01-01', email: 'alice@email.com', phone: '1111-1111', address: 'Rua A' },
     { id: 2, name: 'Bob', cpf: '111.111.111-11', dateOfBirth: '1992-02-02', email: 'bob@email.com', phone: '2222-2222', address: 'Rua B' },
@@ -106,7 +105,7 @@ describe('CreateAppointmentComponent', () => {
     const compiled = fixture.nativeElement as HTMLElement;
 
     const patientOptions = compiled.querySelectorAll('#patientId option');
-    expect(patientOptions.length).toBe(mockPatients.length + 1); // placeholder + options
+    expect(patientOptions.length).toBe(mockPatients.length + 1);
     expect(patientOptions[1].textContent).toContain('Alice');
 
     const doctorOptions = compiled.querySelectorAll('#doctorId option');
@@ -130,5 +129,9 @@ describe('CreateAppointmentComponent', () => {
     const button = fixture.debugElement.query(By.css('button.btn-secondary'));
     button.nativeElement.click();
     expect(component.handleCancel).toHaveBeenCalled();
+  });
+
+  it('should initialize formData.status with Scheduled', () => {
+    expect(component.formData.status).toBe(AppointmentStatus.Scheduled);
   });
 });

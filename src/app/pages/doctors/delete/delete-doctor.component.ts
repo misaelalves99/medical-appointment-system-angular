@@ -26,14 +26,21 @@ export class DeleteDoctorComponent implements OnInit {
     const id = idParam ? Number(idParam) : undefined;
 
     if (id != null) {
-      this.doctorService.getById(id).subscribe((doctor) => {
-        this.doctor = doctor ?? null;
-      });
+      const found = this.doctorService.getById(id); // ✅ corrigido
+      this.doctor = found ?? null;
+
+      if (!this.doctor) {
+        console.warn(`Médico com ID ${id} não encontrado. Redirecionando para lista.`);
+        this.router.navigate(['/doctors']);
+      }
+    } else {
+      console.warn('ID inválido. Redirecionando para lista de médicos.');
+      this.router.navigate(['/doctors']);
     }
   }
 
   handleDelete(): void {
-    if (this.doctor && this.doctor.id != null) {
+    if (this.doctor?.id != null) {
       this.doctorService.delete(this.doctor.id);
       console.log('Médico excluído:', this.doctor);
       this.router.navigate(['/doctors']);

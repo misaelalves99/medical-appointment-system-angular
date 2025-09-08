@@ -1,29 +1,34 @@
 // src/pages/specialty/specialty-list.component.spec.ts
-
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { SpecialtyListComponent } from './specialty-list.component';
-import { SpecialtyService } from '../../services/specialty.service';
-import { of } from 'rxjs';
+import { SpecialtyService, Specialty } from '../../services/specialty.service';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { By } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
+import { By } from '@angular/platform-browser';
+import { of, BehaviorSubject } from 'rxjs';
 
 describe('SpecialtyListComponent', () => {
   let component: SpecialtyListComponent;
   let fixture: ComponentFixture<SpecialtyListComponent>;
-  let specialtyServiceMock: any;
+  let specialtyServiceMock: Partial<SpecialtyService>;
   let router: Router;
 
-  const mockSpecialties = [
+  const mockSpecialties: Specialty[] = [
     { id: 1, name: 'Cardiology' },
     { id: 2, name: 'Neurology' },
     { id: 3, name: 'Dermatology' }
   ];
 
   beforeEach(waitForAsync(() => {
+    // BehaviorSubject para simular specialties$ do serviço
+    const specialties$ = new BehaviorSubject<Specialty[]>(mockSpecialties);
+
     specialtyServiceMock = {
-      getSpecialties: jasmine.createSpy('getSpecialties').and.returnValue(of(mockSpecialties))
+      specialties$: specialties$,
+      getById: jasmine.createSpy('getById').and.callFake((id: number) =>
+        mockSpecialties.find(s => s.id === id)
+      ),
     };
 
     TestBed.configureTestingModule({
@@ -38,16 +43,17 @@ describe('SpecialtyListComponent', () => {
     fixture = TestBed.createComponent(SpecialtyListComponent);
     component = fixture.componentInstance;
     router = TestBed.inject(Router);
-    fixture.detectChanges();
+    spyOn(router, 'navigate');
+    fixture.detectChanges(); // dispara o subscribe e popula specialties
   });
 
   it('should create the component', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should load specialties on ngOnInit', () => {
-    expect(specialtyServiceMock.getSpecialties).toHaveBeenCalled();
+  it('should load specialties on init', () => {
     expect(component.specialties.length).toBe(3);
+    expect(component.filteredSpecialties.length).toBe(3);
   });
 
   it('should filter specialties by name', () => {
@@ -85,7 +91,6 @@ describe('SpecialtyListComponent', () => {
   });
 
   it('should navigate to the given path when navigateTo is called', () => {
-    spyOn(router, 'navigate');
     component.navigateTo('/specialty/create');
     expect(router.navigate).toHaveBeenCalledWith(['/specialty/create']);
   });
@@ -93,10 +98,11 @@ describe('SpecialtyListComponent', () => {
   it('should render specialty rows in the template', () => {
     fixture.detectChanges();
     const rows = fixture.debugElement.queryAll(By.css('tbody tr'));
+    // Deve excluir a linha de "Nenhuma especialidade encontrada"
     expect(rows.length).toBe(3);
     expect(rows[0].nativeElement.textContent).toContain('Cardiology');
-    expect(rows[1].nativeElement.textContent).toContain('Neurology');
-    expect(rows[2].nativeElement.textContent).toContain('Dermatology');
+    expect(rows[1].nativeElement.textContent).toContain('Dermatology');
+    expect(rows[2].nativeElement.textContent).toContain('Neurology');
   });
 
   it('should call navigateTo when action buttons are clicked', () => {
@@ -114,5 +120,12 @@ describe('SpecialtyListComponent', () => {
 
     actionButtons[2].nativeElement.click(); // Excluir
     expect(component.navigateTo).toHaveBeenCalledWith('/specialty/delete/1');
+  });
+
+  it('should update filteredSpecialties when filter input changes', () => {
+    component.filter = 'cardio';
+    component.updateFilteredSpecialties();
+    expect(component.filteredSpecialties.length).toBe(1);
+    expect(component.filteredSpecialties[0].name).toBe('Cardiology');
   });
 });

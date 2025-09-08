@@ -1,10 +1,8 @@
-// src/pages/Doctors/Delete/delete-doctor.component.spec.ts
-
+// src/app/pages/doctors/delete/delete-doctor.component.spec.ts
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { DeleteDoctorComponent } from './delete-doctor.component';
 import { DoctorService } from '../../../services/doctor.service';
 import { Router, ActivatedRoute } from '@angular/router';
-import { of } from 'rxjs';
 import { By } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
 import { Doctor } from '../../../types/doctor.model';
@@ -27,7 +25,7 @@ describe('DeleteDoctorComponent', () => {
 
   beforeEach(async () => {
     doctorServiceSpy = jasmine.createSpyObj('DoctorService', ['getById', 'delete']);
-    doctorServiceSpy.getById.and.returnValue(of(fakeDoctor));
+    doctorServiceSpy.getById.and.returnValue(fakeDoctor);
 
     routerSpy = jasmine.createSpyObj('Router', ['navigate']);
 
@@ -60,25 +58,23 @@ describe('DeleteDoctorComponent', () => {
     expect(nameEl.textContent).toContain('Dr. Test');
   });
 
-  it('should call delete and navigate when confirmed', () => {
+  it('should call delete and navigate when handleDelete confirmed', () => {
     spyOn(window, 'confirm').and.returnValue(true);
-
     component.handleDelete();
 
     expect(doctorServiceSpy.delete).toHaveBeenCalledWith(fakeDoctor.id);
     expect(routerSpy.navigate).toHaveBeenCalledWith(['/doctors']);
   });
 
-  it('should not delete if confirm returns false', () => {
+  it('should not delete if handleDelete confirm returns false', () => {
     spyOn(window, 'confirm').and.returnValue(false);
-
     component.handleDelete();
 
     expect(doctorServiceSpy.delete).not.toHaveBeenCalled();
     expect(routerSpy.navigate).not.toHaveBeenCalled();
   });
 
-  it('should navigate on cancel', () => {
+  it('should navigate on handleCancel', () => {
     component.handleCancel();
     expect(routerSpy.navigate).toHaveBeenCalledWith(['/doctors']);
   });

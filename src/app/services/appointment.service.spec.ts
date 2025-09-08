@@ -1,13 +1,12 @@
 // src/app/services/appointment.service.spec.ts
-
 import { TestBed } from '@angular/core/testing';
 import { AppointmentService, Appointment, AppointmentStatus } from './appointment.service';
+import { take } from 'rxjs/operators';
 
 describe('AppointmentService', () => {
   let service: AppointmentService;
 
-  const mockAppointment: Appointment = {
-    id: 999, // será sobrescrito pelo service.add
+  const mockAppointment: Omit<Appointment, 'id'> = {
     patientId: 3,
     patientName: 'Maria Souza',
     doctorId: 4,
@@ -27,7 +26,7 @@ describe('AppointmentService', () => {
   });
 
   it('should return initial appointments', (done) => {
-    service.getAppointments().subscribe((appointments) => {
+    service.getAppointments().pipe(take(1)).subscribe((appointments) => {
       expect(appointments.length).toBeGreaterThan(0);
       expect(appointments[0].patientName).toBe('João da Silva');
       done();
@@ -35,7 +34,7 @@ describe('AppointmentService', () => {
   });
 
   it('should get appointment by id', (done) => {
-    service.getById(1).subscribe((appointment) => {
+    service.getById(1).pipe(take(1)).subscribe((appointment) => {
       expect(appointment).toBeDefined();
       expect(appointment!.id).toBe(1);
       done();
@@ -43,34 +42,35 @@ describe('AppointmentService', () => {
   });
 
   it('should return undefined for non-existing id', (done) => {
-    service.getById(999).subscribe((appointment) => {
+    service.getById(999).pipe(take(1)).subscribe((appointment) => {
       expect(appointment).toBeUndefined();
       done();
     });
   });
 
   it('should add a new appointment and assign a new id', (done) => {
-    service.add(mockAppointment);
-    service.getAppointments().subscribe((appointments) => {
+    service.add(mockAppointment as Appointment);
+
+    service.getAppointments().pipe(take(1)).subscribe((appointments) => {
       const added = appointments.find(a => a.patientName === 'Maria Souza');
       expect(added).toBeDefined();
-      expect(added!.id).not.toBe(999); // id deve ser sobrescrito
+      expect(added!.id).toBeGreaterThan(0); // id gerado
       expect(added!.patientName).toBe('Maria Souza');
       done();
     });
   });
 
   it('should update an existing appointment', (done) => {
-    // Primeiro adiciona
-    service.add(mockAppointment);
-    service.getAppointments().subscribe((appointments) => {
-      const added = appointments.find(a => a.patientName === 'Maria Souza');
-      expect(added).toBeDefined();
+    // adiciona primeiro
+    service.add(mockAppointment as Appointment);
 
-      const updated = { ...added!, notes: 'Consulta reagendada.' };
+    service.getAppointments().pipe(take(1)).subscribe((appointments) => {
+      const added = appointments.find(a => a.patientName === 'Maria Souza')!;
+      const updated: Appointment = { ...added, notes: 'Consulta reagendada.' };
       service.update(updated);
 
-      service.getById(updated.id).subscribe((appointment) => {
+      service.getById(updated.id).pipe(take(1)).subscribe((appointment) => {
+        expect(appointment).toBeDefined();
         expect(appointment!.notes).toBe('Consulta reagendada.');
         done();
       });
@@ -78,16 +78,15 @@ describe('AppointmentService', () => {
   });
 
   it('should delete an appointment', (done) => {
-    // Primeiro adiciona
-    service.add(mockAppointment);
-    service.getAppointments().subscribe((appointments) => {
-      const added = appointments.find(a => a.patientName === 'Maria Souza');
-      expect(added).toBeDefined();
+    // adiciona primeiro
+    service.add(mockAppointment as Appointment);
 
-      service.delete(added!.id);
+    service.getAppointments().pipe(take(1)).subscribe((appointments) => {
+      const added = appointments.find(a => a.patientName === 'Maria Souza')!;
+      service.delete(added.id);
 
-      service.getAppointments().subscribe((afterDelete) => {
-        const deleted = afterDelete.find(a => a.id === added!.id);
+      service.getAppointments().pipe(take(1)).subscribe((afterDelete) => {
+        const deleted = afterDelete.find(a => a.id === added.id);
         expect(deleted).toBeUndefined();
         done();
       });

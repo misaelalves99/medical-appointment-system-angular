@@ -1,15 +1,16 @@
 // src/app/pages/specialty/edit/edit-specialty.component.ts
 
+// src/app/pages/specialty/edit/edit-specialty.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { SpecialtyService, Specialty } from '../../../services/specialty.service';
 
 @Component({
   selector: 'app-edit-specialty',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './edit-specialty.component.html',
   styleUrls: ['./edit-specialty.component.css'],
 })
@@ -28,10 +29,12 @@ export class EditSpecialtyComponent implements OnInit {
   ngOnInit(): void {
     const paramId = this.route.snapshot.paramMap.get('id');
     this.id = paramId ? Number(paramId) : 0;
-    this.specialty = this.specialtyService.getSpecialtyById(this.id);
+    this.specialty = this.specialtyService.getById(this.id);
 
     if (this.specialty) {
       this.name = this.specialty.name;
+    } else {
+      console.warn(`Especialidade com ID ${this.id} não encontrada.`);
     }
   }
 
@@ -45,7 +48,7 @@ export class EditSpecialtyComponent implements OnInit {
 
     this.error = null;
     if (this.specialty) {
-      this.specialtyService.updateSpecialty(this.specialty.id!, this.name.trim());
+      this.specialtyService.update({ id: this.specialty.id!, name: this.name.trim() });
       this.router.navigate(['/specialty']);
     }
   }

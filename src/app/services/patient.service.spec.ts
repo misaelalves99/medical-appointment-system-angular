@@ -1,11 +1,12 @@
 // src/app/services/patient.service.spec.ts
 import { TestBed } from '@angular/core/testing';
 import { PatientService, Patient } from './patient.service';
+import { take } from 'rxjs/operators';
 
 describe('PatientService', () => {
   let service: PatientService;
 
-  const basePatient: Patient = {
+  const basePatient: Omit<Patient, 'id'> = {
     name: "João Pereira",
     cpf: "111.222.333-44",
     dateOfBirth: "1995-08-21",
@@ -25,7 +26,7 @@ describe('PatientService', () => {
   });
 
   it('should return initial patients', (done) => {
-    service.getPatients().subscribe((patients) => {
+    service.getPatients().pipe(take(1)).subscribe((patients) => {
       expect(patients.length).toBe(2);
       expect(patients[0].name).toBe("Carlos Oliveira");
       done();
@@ -48,8 +49,8 @@ describe('PatientService', () => {
   });
 
   it('should add a new patient with auto-generated id', (done) => {
-    service.add(basePatient);
-    service.getPatients().subscribe((patients) => {
+    service.add(basePatient as Patient);
+    service.getPatients().pipe(take(1)).subscribe((patients) => {
       const added = patients.find(p => p.email === basePatient.email);
       expect(added).toBeDefined();
       expect(added!.id).toBeGreaterThan(2); // ID gerado automaticamente
@@ -59,11 +60,10 @@ describe('PatientService', () => {
   });
 
   it('should update an existing patient', (done) => {
-    // adiciona paciente primeiro
-    service.add(basePatient);
-    service.getPatients().subscribe((patients) => {
+    service.add(basePatient as Patient);
+    service.getPatients().pipe(take(1)).subscribe((patients) => {
       const added = patients.find(p => p.email === basePatient.email)!;
-      const updatedPatient = { ...added, address: "Rua D, 999" };
+      const updatedPatient: Patient = { ...added, address: "Rua D, 999" };
       service.update(updatedPatient);
 
       service.getById(added.id!).subscribe((patient) => {
@@ -74,12 +74,12 @@ describe('PatientService', () => {
   });
 
   it('should delete a patient', (done) => {
-    service.add(basePatient);
-    service.getPatients().subscribe((patients) => {
+    service.add(basePatient as Patient);
+    service.getPatients().pipe(take(1)).subscribe((patients) => {
       const added = patients.find(p => p.email === basePatient.email)!;
       service.delete(added.id!);
 
-      service.getPatients().subscribe((newPatients) => {
+      service.getPatients().pipe(take(1)).subscribe((newPatients) => {
         const deleted = newPatients.find(p => p.id === added.id);
         expect(deleted).toBeUndefined();
         done();

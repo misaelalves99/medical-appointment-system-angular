@@ -1,8 +1,6 @@
-// src/app/pages/specialty/delete/delete-specialty.component.spec.ts
-
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { DeleteSpecialtyComponent } from './delete-specialty.component';
-import { SpecialtyService } from '../../../services/specialty.service';
+import { SpecialtyService, Specialty } from '../../../services/specialty.service';
 import { ActivatedRoute, Router } from '@angular/router';
 
 describe('DeleteSpecialtyComponent', () => {
@@ -12,19 +10,24 @@ describe('DeleteSpecialtyComponent', () => {
   let mockRouter: jasmine.SpyObj<Router>;
   let mockActivatedRoute: Partial<ActivatedRoute>;
 
+  const specialtyMock: Specialty = { id: 1, name: 'Cardiology' };
+
   beforeEach(async () => {
-    mockSpecialtyService = jasmine.createSpyObj('SpecialtyService', ['getSpecialtyById', 'deleteSpecialty']);
+    mockSpecialtyService = jasmine.createSpyObj('SpecialtyService', ['getById', 'delete']);
     mockRouter = jasmine.createSpyObj('Router', ['navigate']);
 
     mockActivatedRoute = {
       snapshot: {
         paramMap: {
-          get: (key: string) => (key === 'id' ? '1' : null)
+          get: (key: string) => (key === 'id' ? '1' : null),
+          has: (key: string) => key === 'id',
+          getAll: (key: string) => (key === 'id' ? ['1'] : []),
+          keys: ['id'],
         }
       }
     } as any;
 
-    mockSpecialtyService.getSpecialtyById.and.returnValue({ id: 1, name: 'Cardiology' });
+    mockSpecialtyService.getById.and.returnValue(specialtyMock);
 
     await TestBed.configureTestingModule({
       imports: [DeleteSpecialtyComponent],
@@ -45,29 +48,35 @@ describe('DeleteSpecialtyComponent', () => {
   });
 
   it('should load specialty on init using route param', () => {
-    expect(mockSpecialtyService.getSpecialtyById).toHaveBeenCalledWith(1);
-    expect(component.specialty).toEqual({ id: 1, name: 'Cardiology' });
+    expect(mockSpecialtyService.getById).toHaveBeenCalledWith(1);
+    expect(component.specialty).toEqual(specialtyMock);
   });
 
   it('should delete specialty and navigate when handleDelete is called', () => {
     component.handleDelete();
 
-    expect(mockSpecialtyService.deleteSpecialty).toHaveBeenCalledWith(1);
+    expect(mockSpecialtyService.delete).toHaveBeenCalledWith(1);
     expect(mockRouter.navigate).toHaveBeenCalledWith(['/specialty']);
   });
 
-  it('should not throw or call delete if no specialty is loaded', () => {
+  it('should not call delete or navigate if no specialty is loaded', () => {
     component.specialty = null;
-
     component.handleDelete();
 
-    expect(mockSpecialtyService.deleteSpecialty).not.toHaveBeenCalled();
+    expect(mockSpecialtyService.delete).not.toHaveBeenCalled();
     expect(mockRouter.navigate).not.toHaveBeenCalled();
   });
 
   it('should navigate back on cancel', () => {
     component.handleCancel();
-
     expect(mockRouter.navigate).toHaveBeenCalledWith(['/specialty']);
+  });
+
+  it('should show loading template if specialty is null', () => {
+    component.specialty = null;
+    fixture.detectChanges();
+
+    const loadingEl: HTMLElement = fixture.nativeElement.querySelector('p');
+    expect(loadingEl.textContent).toContain('Carregando');
   });
 });

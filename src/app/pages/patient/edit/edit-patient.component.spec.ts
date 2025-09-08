@@ -7,6 +7,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { FormsModule, NgForm } from '@angular/forms';
 import { of } from 'rxjs';
 import { By } from '@angular/platform-browser';
+import { CommonModule } from '@angular/common';
 
 describe('EditPatientComponent', () => {
   let component: EditPatientComponent;
@@ -32,15 +33,14 @@ describe('EditPatientComponent', () => {
       'update',
     ]);
 
+    const mockActivatedRoute = { snapshot: { paramMap: { get: () => '1' } } };
+
     await TestBed.configureTestingModule({
-      imports: [EditPatientComponent, FormsModule],
+      imports: [EditPatientComponent, FormsModule, CommonModule],
       providers: [
         { provide: Router, useValue: mockRouter },
         { provide: PatientService, useValue: mockPatientService },
-        {
-          provide: ActivatedRoute,
-          useValue: { snapshot: { paramMap: { get: () => '1' } } },
-        },
+        { provide: ActivatedRoute, useValue: mockActivatedRoute },
       ],
     }).compileComponents();
 
@@ -78,11 +78,9 @@ describe('EditPatientComponent', () => {
     mockPatientService.getById.and.returnValue(of(patientMock));
     fixture.detectChanges();
 
-    const form = {
-      invalid: false,
-    } as NgForm;
-
+    const form = { invalid: false } as NgForm;
     component.handleSubmit(form);
+
     expect(mockPatientService.update).toHaveBeenCalledWith(patientMock);
     expect(mockRouter.navigate).toHaveBeenCalledWith(['/patient']);
   });

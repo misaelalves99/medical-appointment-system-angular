@@ -1,47 +1,61 @@
-// src/pages/Doctors/Edit/doctor-edit.component.ts
-
-import { Component, Input } from '@angular/core';
+// src/app/pages/doctors/edit/doctor-edit.component.ts
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-
-// ⚡ Exportando a interface Doctor para testes e outros componentes
-export interface Doctor {
-  id: number;
-  name: string;
-  crm: string;
-  specialty: string;
-  email: string;
-  phone: string;
-  isActive: boolean;
-}
+import { DoctorService, Doctor } from '../../../services/doctor.service';
+import { SpecialtyService, Specialty } from '../../../services/specialty.service';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-doctor-edit',
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './doctor-edit.component.html',
-  styleUrls: ['./doctor-edit.component.css']
+  styleUrls: ['./doctor-edit.component.css'],
 })
-export class DoctorEditComponent {
-  @Input() doctor!: Doctor;
+export class DoctorEditComponent implements OnInit {
+  doctorId!: number;
+  form!: Doctor | null;
+  specialties: Specialty[] = [];
 
-  form!: Doctor;
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private doctorService: DoctorService,
+    private specialtyService: SpecialtyService
+  ) {}
 
-  constructor(private router: Router) {}
+  ngOnInit(): void {
+    // Pega lista de especialidades
+    this.specialtyService.getSpecialties()
+      .pipe(take(1))
+      .subscribe((specialties) => {
+        this.specialties = specialties;
+      });
 
-  ngOnInit() {
-    // Inicializa o formulário com os dados do médico
-    this.form = { ...this.doctor };
+    // Pega o ID da rota e carrega o médico
+    this.route.paramMap.subscribe(params => {
+      const id = params.get('id');
+      if (id) {
+        this.doctorId = Number(id);
+        const found = this.doctorService.getById(this.doctorId);
+        if (found) {
+          this.form = { ...found };
+        } else {
+          this.router.navigate(['/doctors']);
+        }
+      }
+    });
   }
 
-  onSave() {
-    console.log('Salvar alterações:', this.form);
-    // Aqui você pode implementar atualização no mock ou API
+  onSave(): void {
+    if (!this.form) return;
+    this.doctorService.update(this.form);
     this.router.navigate(['/doctors']);
   }
 
-  onCancel() {
+  onCancel(): void {
     this.router.navigate(['/doctors']);
   }
 }

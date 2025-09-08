@@ -3,9 +3,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { PatientIndexComponent } from './patient-index.component';
 import { PatientService, Patient } from '../../services/patient.service';
-import { of, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { By } from '@angular/platform-browser';
 
 describe('PatientIndexComponent', () => {
   let component: PatientIndexComponent;
@@ -105,10 +106,41 @@ describe('PatientIndexComponent', () => {
     expect(routerSpy.navigate).toHaveBeenCalledWith(['/patient/details/1']);
   });
 
-  it('should show no results when filteredPatients is empty', () => {
+  it('should show no results message when filteredPatients is empty', () => {
     patientsSubject.next([]);
     component.search = 'any';
     component.updateFilteredPatients();
-    expect(component.filteredPatients.length).toBe(0);
+    fixture.detectChanges();
+
+    const noResultsEl = fixture.debugElement.query(By.css('.noResults'));
+    expect(noResultsEl.nativeElement.textContent).toContain('Nenhum paciente encontrado.');
+  });
+
+  it('should render patient table when filteredPatients has items', () => {
+    patientsSubject.next(mockPatients);
+    fixture.detectChanges();
+
+    const tableEl = fixture.debugElement.query(By.css('table'));
+    expect(tableEl).toBeTruthy();
+
+    const rows = fixture.debugElement.queryAll(By.css('tbody tr'));
+    expect(rows.length).toBe(2);
+  });
+
+  it('should call navigate when action buttons are clicked', () => {
+    patientsSubject.next(mockPatients);
+    fixture.detectChanges();
+
+    const buttons = fixture.debugElement.queryAll(By.css('button.detailsLink'));
+    buttons[0].nativeElement.click();
+    expect(routerSpy.navigate).toHaveBeenCalledWith(['/patient/details/1']);
+
+    const editBtn = fixture.debugElement.query(By.css('button.editLink'));
+    editBtn.nativeElement.click();
+    expect(routerSpy.navigate).toHaveBeenCalledWith(['/patient/edit/1']);
+
+    const deleteBtn = fixture.debugElement.query(By.css('button.deleteLink'));
+    deleteBtn.nativeElement.click();
+    expect(routerSpy.navigate).toHaveBeenCalledWith(['/patient/delete/1']);
   });
 });

@@ -44,18 +44,21 @@ export class EditAppointmentComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // ✅ assinando observables corretamente
+    // Pega lista de pacientes
     this.patientService.getPatients().subscribe((patients) => {
       this.patients = patients;
     });
 
+    // Pega lista de médicos
     this.doctorService.getDoctors().subscribe((doctors) => {
       this.doctors = doctors;
     });
 
+    // Pega ID do appointment da rota
     const idParam = this.route.snapshot.paramMap.get('id');
     if (idParam) this.appointmentId = Number(idParam);
 
+    // Pega dados do appointment
     this.appointmentService.getById(this.appointmentId).subscribe((appointment) => {
       if (appointment) {
         this.formData = {
@@ -72,10 +75,16 @@ export class EditAppointmentComponent implements OnInit {
   handleSubmit(form: NgForm) {
     if (form.invalid) return;
 
+    // Pega paciente e médico selecionados
+    const selectedPatient = this.patients.find(p => p.id === Number(this.formData.patientId));
+    const selectedDoctor = this.doctors.find(d => d.id === Number(this.formData.doctorId));
+
     const updatedAppointment: Appointment = {
       id: this.appointmentId,
       patientId: Number(this.formData.patientId),
+      patientName: selectedPatient?.name,   // adiciona nome do paciente
       doctorId: Number(this.formData.doctorId),
+      doctorName: selectedDoctor?.name,     // adiciona nome do médico
       appointmentDate: new Date(this.formData.appointmentDate).toISOString(),
       status: this.formData.status as AppointmentStatus,
       notes: this.formData.notes,

@@ -1,11 +1,11 @@
 // src/pages/Patient/Create/create-patient.component.spec.ts
 
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { CreatePatientComponent } from './create-patient.component';
+import { PatientService, Patient } from '../../../services/patient.service';
+import { Router } from '@angular/router';
 import { FormsModule, NgForm } from '@angular/forms';
 import { By } from '@angular/platform-browser';
-import { CreatePatientComponent } from './create-patient.component';
-import { Router } from '@angular/router';
-import { PatientService, Patient } from '../../../services/patient.service';
 import { CommonModule } from '@angular/common';
 
 describe('CreatePatientComponent', () => {
@@ -40,15 +40,15 @@ describe('CreatePatientComponent', () => {
     expect(h1.textContent).toContain('Cadastrar Paciente');
   });
 
-  it('should have empty initial formData', () => {
+  it('should initialize empty formData', () => {
     expect(component.formData).toEqual({
       name: '',
       cpf: '',
       dateOfBirth: '',
-      email: '',
-      phone: '',
-      address: '',
       gender: '',
+      phone: '',
+      email: '',
+      address: '',
     });
   });
 
@@ -84,7 +84,7 @@ describe('CreatePatientComponent', () => {
     });
   });
 
-  it('should call handleSubmit and add patient when form is submitted', () => {
+  it('should call add and navigate when form is valid', () => {
     component.formData = {
       name: 'Maria',
       cpf: '11122233344',
@@ -94,7 +94,6 @@ describe('CreatePatientComponent', () => {
       email: 'maria@test.com',
       address: 'Rua XYZ, 456',
     };
-
     const form = { invalid: false } as NgForm;
 
     component.handleSubmit(form);

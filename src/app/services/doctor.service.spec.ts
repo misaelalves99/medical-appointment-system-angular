@@ -1,11 +1,12 @@
 // src/app/services/doctor.service.spec.ts
 import { TestBed } from '@angular/core/testing';
 import { DoctorService, Doctor } from './doctor.service';
+import { take } from 'rxjs/operators';
 
 describe('DoctorService', () => {
   let service: DoctorService;
 
-  const baseDoctor: Doctor = {
+  const baseDoctor: Omit<Doctor, 'id'> = {
     name: 'Dr. Carlos Mendes',
     crm: '789012',
     specialty: 'Ortopedia',
@@ -24,31 +25,27 @@ describe('DoctorService', () => {
   });
 
   it('should return initial doctors', (done) => {
-    service.getDoctors().subscribe((doctors) => {
+    service.getDoctors().pipe(take(1)).subscribe((doctors) => {
       expect(doctors.length).toBe(2);
       expect(doctors[0].name).toBe('Dr. João Silva');
       done();
     });
   });
 
-  it('should get doctor by id', (done) => {
-    service.getById(1).subscribe((doctor) => {
-      expect(doctor).toBeDefined();
-      expect(doctor!.id).toBe(1);
-      done();
-    });
+  it('should get doctor by id', () => {
+    const doctor = service.getById(1);
+    expect(doctor).toBeDefined();
+    expect(doctor!.id).toBe(1);
   });
 
-  it('should return undefined for non-existing id', (done) => {
-    service.getById(999).subscribe((doctor) => {
-      expect(doctor).toBeUndefined();
-      done();
-    });
+  it('should return undefined for non-existing id', () => {
+    const doctor = service.getById(999);
+    expect(doctor).toBeUndefined();
   });
 
   it('should add a new doctor with auto-generated id', (done) => {
-    service.add(baseDoctor);
-    service.getDoctors().subscribe((doctors) => {
+    service.add(baseDoctor as Doctor);
+    service.getDoctors().pipe(take(1)).subscribe((doctors) => {
       const added = doctors.find(d => d.email === baseDoctor.email);
       expect(added).toBeDefined();
       expect(added!.id).toBeGreaterThan(2); // deve ser 3 em diante
@@ -58,28 +55,25 @@ describe('DoctorService', () => {
   });
 
   it('should update an existing doctor', (done) => {
-    // adiciona primeiro para garantir que existe
-    service.add(baseDoctor);
-    service.getDoctors().subscribe((doctors) => {
+    service.add(baseDoctor as Doctor);
+    service.getDoctors().pipe(take(1)).subscribe((doctors) => {
       const added = doctors.find(d => d.email === baseDoctor.email)!;
-      const updatedDoctor = { ...added, specialty: 'Pediatria' };
+      const updatedDoctor: Doctor = { ...added, specialty: 'Pediatria' };
       service.update(updatedDoctor);
 
-      service.getById(added.id!).subscribe((doctor) => {
-        expect(doctor!.specialty).toBe('Pediatria');
-        done();
-      });
+      const doctorAfterUpdate = service.getById(added.id!);
+      expect(doctorAfterUpdate!.specialty).toBe('Pediatria');
+      done();
     });
   });
 
   it('should delete a doctor', (done) => {
-    // adiciona e depois deleta
-    service.add(baseDoctor);
-    service.getDoctors().subscribe((doctors) => {
+    service.add(baseDoctor as Doctor);
+    service.getDoctors().pipe(take(1)).subscribe((doctors) => {
       const added = doctors.find(d => d.email === baseDoctor.email)!;
       service.delete(added.id!);
 
-      service.getDoctors().subscribe((newDoctors) => {
+      service.getDoctors().pipe(take(1)).subscribe((newDoctors) => {
         const deleted = newDoctors.find(d => d.id === added.id);
         expect(deleted).toBeUndefined();
         done();

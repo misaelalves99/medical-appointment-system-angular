@@ -1,27 +1,24 @@
-<!-- src/pages/Appointment/Details/details-appointment.component.html -->
-
-<div class="appointmentDetailsContainer">
+<div class="appointmentDetailsContainer" *ngIf="appointment; else notFound">
   <h1>Detalhes da Consulta</h1>
 
   <div class="infoRow">
     <span class="infoLabel">Paciente</span>
-    <span class="infoValue">
-      {{ appointment.patient?.fullName || ('ID ' + appointment.patientId) }}
-    </span>
+    <span class="infoValue">{{ appointment.patientName || ('ID ' + appointment.patientId) }}</span>
   </div>
 
   <div class="infoRow">
     <span class="infoLabel">Médico</span>
-    <span class="infoValue">
-      {{ appointment.doctor?.fullName || ('ID ' + appointment.doctorId) }}
-    </span>
+    <span class="infoValue">{{ appointment.doctorName || ('ID ' + appointment.doctorId) }}</span>
   </div>
 
   <div class="infoRow">
-    <span class="infoLabel">Data e Hora</span>
-    <span class="infoValue">
-      {{ appointment.appointmentDate | date: 'short':'':'pt-BR' }}
-    </span>
+    <span class="infoLabel">Data</span>
+    <span class="infoValue">{{ formattedDate }}</span>
+  </div>
+
+  <div class="infoRow">
+    <span class="infoLabel">Hora</span>
+    <span class="infoValue">{{ formattedTime }}</span>
   </div>
 
   <div class="infoRow">
@@ -29,10 +26,16 @@
     <span class="infoValue">{{ appointment.status }}</span>
   </div>
 
-  <div class="notes">{{ appointment.notes }}</div>
+  <div class="notes" *ngIf="appointment.notes">
+    <strong>Notas:</strong> {{ appointment.notes }}
+  </div>
 
   <div class="actions">
     <button (click)="navigateToEdit()">Editar</button>
     <button (click)="navigateToList()">Voltar</button>
   </div>
 </div>
+
+<ng-template #notFound>
+  <p>Agendamento não encontrado.</p>
+</ng-template>

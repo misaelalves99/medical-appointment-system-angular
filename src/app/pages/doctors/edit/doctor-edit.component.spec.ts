@@ -1,11 +1,12 @@
-// src/pages/Doctors/Edit/doctor-edit.component.spec.ts
-
+// src/app/pages/doctors/edit/doctor-edit.component.spec.ts
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { DoctorEditComponent, Doctor } from './doctor-edit.component';
+import { DoctorEditComponent } from './doctor-edit.component';
+import { Doctor } from '../../../types/doctor.model';
 import { Router } from '@angular/router';
-import { FormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { of } from 'rxjs';
 
 describe('DoctorEditComponent', () => {
   let component: DoctorEditComponent;
@@ -22,6 +23,11 @@ describe('DoctorEditComponent', () => {
     isActive: true,
   };
 
+  const specialtiesMock = [
+    { name: 'Cardiologia' },
+    { name: 'Dermatologia' },
+  ];
+
   beforeEach(async () => {
     routerSpy = jasmine.createSpyObj('Router', ['navigate']);
 
@@ -32,7 +38,11 @@ describe('DoctorEditComponent', () => {
 
     fixture = TestBed.createComponent(DoctorEditComponent);
     component = fixture.componentInstance;
-    component.doctor = mockDoctor;
+
+    // Simula carregamento do médico e especialidades
+    component.form = { ...mockDoctor };
+    component.specialties = [...specialtiesMock];
+
     fixture.detectChanges();
   });
 
@@ -40,16 +50,15 @@ describe('DoctorEditComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should initialize form with doctor data on ngOnInit', () => {
+  it('should initialize form with doctor data', () => {
     expect(component.form).toEqual(mockDoctor);
   });
 
   it('should render form fields with initial values', () => {
     const compiled = fixture.nativeElement as HTMLElement;
-
     expect((compiled.querySelector('input[name="name"]') as HTMLInputElement).value).toBe(mockDoctor.name);
     expect((compiled.querySelector('input[name="crm"]') as HTMLInputElement).value).toBe(mockDoctor.crm);
-    expect((compiled.querySelector('input[name="specialty"]') as HTMLInputElement).value).toBe(mockDoctor.specialty);
+    expect((compiled.querySelector('select[name="specialty"]') as HTMLSelectElement).value).toBe(mockDoctor.specialty);
     expect((compiled.querySelector('input[name="email"]') as HTMLInputElement).value).toBe(mockDoctor.email);
     expect((compiled.querySelector('input[name="phone"]') as HTMLInputElement).value).toBe(mockDoctor.phone);
     expect((compiled.querySelector('input[name="isActive"]') as HTMLInputElement).checked).toBeTrue();
@@ -60,16 +69,17 @@ describe('DoctorEditComponent', () => {
     nameInput.value = 'Dr. Updated';
     nameInput.dispatchEvent(new Event('input'));
     fixture.detectChanges();
-    expect(component.form.name).toBe('Dr. Updated');
+    expect(component.form!.name).toBe('Dr. Updated');
 
     const activeCheckbox = fixture.debugElement.query(By.css('input[name="isActive"]')).nativeElement as HTMLInputElement;
     activeCheckbox.checked = false;
     activeCheckbox.dispatchEvent(new Event('change'));
     fixture.detectChanges();
-    expect(component.form.isActive).toBeFalse();
+    expect(component.form!.isActive).toBeFalse();
   });
 
   it('should navigate to /doctors onSave', () => {
+    spyOn(component['doctorService'], 'update').and.callFake(() => {});
     component.onSave();
     expect(routerSpy.navigate).toHaveBeenCalledWith(['/doctors']);
   });
@@ -77,5 +87,13 @@ describe('DoctorEditComponent', () => {
   it('should navigate to /doctors onCancel', () => {
     component.onCancel();
     expect(routerSpy.navigate).toHaveBeenCalledWith(['/doctors']);
+  });
+
+  it('should render specialties in select dropdown', () => {
+    fixture.detectChanges();
+    const options = fixture.debugElement.queryAll(By.css('select[name="specialty"] option'));
+    expect(options.length).toBe(3); // 1 default + 2 mock
+    expect(options[1].nativeElement.textContent).toBe('Cardiologia');
+    expect(options[2].nativeElement.textContent).toBe('Dermatologia');
   });
 });

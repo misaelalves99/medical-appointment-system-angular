@@ -1,32 +1,34 @@
-<!-- src/pages/Doctors/Edit/doctor-edit.component.html -->
-
+<!-- src/app/pages/doctors/edit/doctor-edit.component.html -->
 <div class="container" *ngIf="form">
   <h1>Editar Médico</h1>
   <form (ngSubmit)="onSave()">
-    <label>
-      Nome:
-      <input type="text" name="name" [(ngModel)]="form.name" required />
-    </label>
+    <div>
+      <label for="name">Nome:</label>
+      <input id="name" type="text" name="name" [(ngModel)]="form.name" required />
+    </div>
 
-    <label>
-      CRM:
-      <input type="text" name="crm" [(ngModel)]="form.crm" required />
-    </label>
+    <div>
+      <label for="crm">CRM:</label>
+      <input id="crm" type="text" name="crm" [(ngModel)]="form.crm" required />
+    </div>
 
-    <label>
-      Especialidade:
-      <input type="text" name="specialty" [(ngModel)]="form.specialty" required />
-    </label>
+    <div>
+      <label for="specialty">Especialidade:</label>
+      <select id="specialty" name="specialty" [(ngModel)]="form.specialty" required>
+        <option value="">Selecione uma especialidade</option>
+        <option *ngFor="let s of specialties" [value]="s.name">{{ s.name }}</option>
+      </select>
+    </div>
 
-    <label>
-      Email:
-      <input type="email" name="email" [(ngModel)]="form.email" required />
-    </label>
+    <div>
+      <label for="email">Email:</label>
+      <input id="email" type="email" name="email" [(ngModel)]="form.email" required />
+    </div>
 
-    <label>
-      Telefone:
-      <input type="tel" name="phone" [(ngModel)]="form.phone" required />
-    </label>
+    <div>
+      <label for="phone">Telefone:</label>
+      <input id="phone" type="tel" name="phone" [(ngModel)]="form.phone" required />
+    </div>
 
     <label class="checkboxLabel">
       <input type="checkbox" name="isActive" [(ngModel)]="form.isActive" />
